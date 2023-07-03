@@ -1,0 +1,17 @@
+export interface IState {
+    loginUser: {
+        loggingIn: boolean, userLists: object[], loginCurrentUser: object
+    };
+    menuList: {
+        menus: any; isMenuSelect: boolean
+    };
+    alertReducer: {
+        type: string, message: string
+    };
+    progress: {
+        isProgress: boolean
+    };
+    commonReducer: {
+        spentType: object[], transferType: object[]
+    };
+}
