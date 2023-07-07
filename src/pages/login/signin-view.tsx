@@ -39,15 +39,20 @@ function SigninPage(props: any) {
 
     return (<>
         <Router history={history}>
-            <React.Fragment>
-                <Switch>
-                    <Route path="/home/:anyLink" component={HomeRouter} />
-                    <Route path="/home" component={HomePageView} />
-                    <Route path="/login" component={LoginPage} />
-                    <Route path="/register" component={RegisterView} />
-                    <Route path="/forgotpassword" component={ForgotPasswordView} />
-                </Switch>
-            </React.Fragment>
+            {props.loggingIn ?
+                <React.Fragment>
+                    <Switch>
+                        <Route path="/home/:anyLink" component={HomeRouter} />
+                        <Route path="/home" component={HomePageView} />
+                    </Switch>
+                </React.Fragment> :
+                <React.Fragment>
+                    <Switch>
+                        <Route path="/login" component={LoginPage} />
+                        <Route path="/register" component={RegisterView} />
+                        <Route path="/forgotpassword" component={ForgotPasswordView} />
+                    </Switch>
+                </React.Fragment>}
         </Router>
     </>);
 }

@@ -6,11 +6,11 @@ import { TextFieldView } from "src/component/textfield-view";
 import { Link } from "react-router-dom";
 import { Browser } from "src/helper/browser";
 import { ButtonView } from "src/component/button-view";
-// import { decryptData } from "src/common";
-// import { alertAction } from "../alert/alert-reducer";
-// import { loginAction } from "./login-reducer";
-// import { apiActions } from "src/action/action";
-// import { COMMONAPI } from "src/apiurl";
+import { decryptData } from "src/common";
+import { alertAction } from "../alert/alert-reducer";
+import { loginAction } from "./login-reducer";
+import { apiActions } from "src/action/action";
+import { USERAPI } from "src/apiurl";
 
 function LoginPageView(props: any) {
 
@@ -23,25 +23,24 @@ function LoginPageView(props: any) {
     };
 
     const submit = () => {
-        // let alreadyPresent = props.userLists.filter((line: any) => line.username === state.username &&
-        //     decryptData(line.password) === state.password);
-        // if (alreadyPresent.length === 0) {
-        //     props.dispatch(alertAction.error('Username and Password Mismatch'));
-        // } else {
-        //     apiActions.loginAction((info: any) => {
-        //         props.dispatch(apiActions.methodAction('get', COMMONAPI(alreadyPresent[0]['uuid']).GETBYID, {}, (res: any) => {
-        //             sessionStorage.setItem('accessToken', '111222333');
-        //             sessionStorage.setItem('userUuid', alreadyPresent[0]['uuid']);
-        //             props.dispatch(loginAction.loginCurrentUser(res.data));
-        //             props.dispatch(loginAction.loginRequest());
-        //             history.push('\home');
-        //         }));
-        //     }, () => {
-        //         sessionStorage.setItem('accessToken', '111222333');
-        //         sessionStorage.setItem('userUuid', alreadyPresent[0]['uuid']);
-        //     });
-        // }
-        history.push('\home');
+        let alreadyPresent = props.userLists.filter((line: any) => line.username === state.username &&
+            decryptData(line.password) === state.password);
+        if (alreadyPresent.length === 0) {
+            props.dispatch(alertAction.error('Username and Password Mismatch'));
+        } else {
+            apiActions.loginAction((info: any) => {
+                props.dispatch(apiActions.methodAction('get', USERAPI(alreadyPresent[0]['uuid']).GETBYID, {}, (res: any) => {
+                    sessionStorage.setItem('accessToken', '111222333');
+                    sessionStorage.setItem('userUuid', alreadyPresent[0]['uuid']);
+                    props.dispatch(loginAction.loginCurrentUser(res.data));
+                    props.dispatch(loginAction.loginRequest());
+                    history.push('\home');
+                }));
+            }, () => {
+                sessionStorage.setItem('accessToken', '111222333');
+                sessionStorage.setItem('userUuid', alreadyPresent[0]['uuid']);
+            });
+        }
     };
     
     return (<>

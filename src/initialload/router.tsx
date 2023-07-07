@@ -4,7 +4,6 @@ import { Route, Switch } from 'react-router-dom';
 import { ButtonView } from 'src/component/button-view';
 import { IState } from './state-interface';
 import { commonView } from 'src/pages/common-view';
-import { menuList } from 'src/pages/menulists/menus-view';
 
 function NotFound() {
     return <div className={'m-4'} align={'center'}>
@@ -39,7 +38,7 @@ function HomeRouterView(props: any) {
         }
     };
 
-    let routes: any[] = menuList;
+    let routes: any[] = props.menus;
     routes = routes.map((menu: any, index: number) => {
         let model = generateMenuObj(menu);
         return <Route key={index} exact={!!model.isExact} path={model.path} component={model.Component}></Route>;

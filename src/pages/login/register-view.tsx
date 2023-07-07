@@ -11,7 +11,7 @@ import { loginAction } from "./login-reducer";
 import { emailValidate, encryptedData, isNullOrUndefinedOrEmpty, mobileValidate, passwordValidate } from "src/common";
 import { alertAction } from "../alert/alert-reducer";
 import { ButtonView } from "src/component/button-view";
-import { COMMONAPI } from "src/apiurl";
+import { USERAPI } from "src/apiurl";
 
 function Register(props: any) {
 
@@ -79,7 +79,7 @@ function Register(props: any) {
             props.dispatch(alertAction.error('All the Fields are must be fill'));
         } else {
             let postData = {username: state.username, password: encryptedData(state.password), phoneNumber: state.phoneNumber, email: state.email};
-            props.dispatch(apiActions.methodAction('post', COMMONAPI().POST, postData, (res: any) => {
+            props.dispatch(apiActions.methodAction('post', USERAPI().POST, postData, (res: any) => {
                 let userLists = props.userLists.concat([res.data]);
                 props.dispatch(loginAction.loginUserList(userLists));
                 history.push('/login');

@@ -9,7 +9,7 @@ import { Browser } from "src/helper/browser";
 import { history } from "src/helper/history";
 import { IState } from "src/initialload/state-interface";
 import { alertAction } from "../alert/alert-reducer";
-import { COMMONAPI } from "src/apiurl";
+import { USERAPI } from "src/apiurl";
 
 function ForgotPassword(props: any) {
 
@@ -28,7 +28,7 @@ function ForgotPassword(props: any) {
             props.dispatch(alertAction.error('Password And ConfirmPassword Mismatch'));
         } else {
             let putData = {...state.selecteData, password: encryptedData(state.password)};
-            props.dispatch(apiActions.methodAction('put', COMMONAPI().PUT, putData, (res: any) => {
+            props.dispatch(apiActions.methodAction('put', USERAPI().PUT, putData, (res: any) => {
                 history.push('/login');
             }));
         }
