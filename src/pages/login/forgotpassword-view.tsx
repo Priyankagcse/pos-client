@@ -10,6 +10,7 @@ import { history } from "src/helper/history";
 import { IState } from "src/initialload/state-interface";
 import { alertAction } from "../alert/alert-reducer";
 import { USERAPI } from "src/apiurl";
+import { loginAction } from "./login-reducer";
 
 function ForgotPassword(props: any) {
 
@@ -29,6 +30,13 @@ function ForgotPassword(props: any) {
         } else {
             let putData = {...state.selecteData, password: encryptedData(state.password)};
             props.dispatch(apiActions.methodAction('put', USERAPI().PUT, putData, (res: any) => {
+                let userLists = props.userLists.map((line: any) => {
+                    if (line.uuid === putData.uuid) {
+                        line['password'] = putData.password;
+                    }
+                    return line;
+                });
+                props.dispatch(loginAction.loginUserList(userLists));
                 history.push('/login');
             }));
         }
