@@ -28,7 +28,7 @@ function MenuPage(props: any) {
     </>);
 }
 
-const mapStateToProps = function(state: IState) {   
+const mapStateToProps = function(state: IState) {
     return {
         menus: state.menuList.menus
     };

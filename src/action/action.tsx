@@ -18,7 +18,7 @@ function loginAction(succ?: any, fail?: any) {
 
 function methodAction(method: string, url: any, obj: any, succ?: any, fail?: any) {
     return (dispatch: any, getState: any) => {
-        // dispatch(progressAction.show());
+        dispatch(progressAction.show());
         let requestObj = obj;
         if (method === 'post') {
             addCreatedBy(requestObj);

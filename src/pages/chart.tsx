@@ -15,7 +15,8 @@ export function ChartView(props: any) {
                     minBarLength: 2
                 }
             ];
-            let monthreport = [{name: 'amount', borderColor: 'orange', backgroundColor: 'pink', value: [{amount: 100}]}].filter((row: any) => row.name === line.name);
+            let monthreport = [{name: 'amount', borderColor: 'orange', backgroundColor: 'pink', value: [{amount: 100}]}]
+                .filter((row: any) => row.name === line.name);
             if (monthreport.length && monthreport[0]['value'].length) {
                 datasets = datasets.concat([
                     {

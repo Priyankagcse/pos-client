@@ -12,7 +12,6 @@ function NotFound() {
     </div>;
 }
 
-
 function HomeRouterView(props: any) {
 
     const generateMenuObj = (menu: any) => {

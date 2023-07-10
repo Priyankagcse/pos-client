@@ -28,14 +28,6 @@ export const typographyTheme = createTheme({
 });
 
 export const buttonViewTheme = createTheme({
-    // overrides: {
-    //     MuiButton: {
-    //         startIcon: {
-    //             marginLeft: '1px',
-    //             marginRight: '1px'
-    //         }
-    //     }
-    // }
     components: {
       MuiButton: {
         styleOverrides: {

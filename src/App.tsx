@@ -11,15 +11,6 @@ import { createRoot } from 'react-dom/client';
 import { configureStore } from '@reduxjs/toolkit';
 import { ThemeProvider } from '@mui/material';
 import { theme } from './commontheme-css';
-// import { createStore, applyMiddleware } from 'redux';
-// import thunkMiddleware from 'redux-thunk';
-
-// "@material-ui/core": "^4.12.4",
-// "@material-ui/icons": "^4.11.3",
-// "@material-ui/lab": "^4.0.0-alpha.61",
-// "@material-ui/pickers": "^3.3.10",
-// "@material-ui/styles": "^4.11.5",
-// "react-material-ui-form-validator": "^3.0.1",
 
 declare module 'react' {
     interface HTMLAttributes<T> {
@@ -37,29 +28,13 @@ export function App() {
     );
 }
 
-// let stringData = localStorage.getItem(`nila-${localStorage.getItem('loginUser')}`);
-// let previousData: IState = {} as IState;
-// if (stringData) {
-//     try {
-//         previousData = JSON.parse(stringData) || {};
-//     } catch {
-//         previousData = {} as IState;
-//     }
-// }
-
-// export const store = createStore(
-//     rootReducer,
-//     {} || previousData,
-//     applyMiddleware(thunkMiddleware)
-// );
-
 export const store = configureStore({reducer: rootReducer});
 
 const domNode = document.getElementById('root');
 const root = createRoot(domNode);
 root.render(<Provider store={store}>
     <App />
-</Provider>)
+</Provider>);
 
 function saveonClose() {
     saveLocalData();
@@ -78,8 +53,6 @@ function saveLocalData() {
         saveData(store.getState() as IState);
     }
 }
-
-// registerServiceWorker.register();
 
 export function saveData(state: object) {
     try {
