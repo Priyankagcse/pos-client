@@ -5,15 +5,15 @@ import { isNullOrUndefinedOrEmpty } from "src/common";
 export function TextFieldView(props: any) {
   
     const [error, setError] = React.useState(false);
-    let id = "standard-basic";
+    // let id = "standard-basic";
     let variant: any = "standard";
-    if (false) {
-        id = "outlined-basic";
-        variant = "outlined";
-    }
-    if (props.id) {
-        id = props.id;
-    }
+    // if (false) {
+    //     id = "outlined-basic";
+    //     variant = "outlined";
+    // }
+    // if (props.id) {
+    //     id = props.id;
+    // }
     if (props.outlined) {
         variant = props.variant;
     }
@@ -40,7 +40,7 @@ export function TextFieldView(props: any) {
     };
 
     return (<>
-        <TextField id={id} label={props.label} type={props.type} variant={variant} className={props.className}
+        <TextField label={props.label} type={props.type} variant={variant} className={props.className}
             onChange={(value: any) => props.onChange(props.field, value.target.value)} value={props.value} error={error}
             onBlur={onBlurAct} defaultValue={props.defaultValue} multiline={props.multiline}
             rows={props.rows} required={props.required} onKeyDown={props.onKeyDown} placeholder={props.placeholder}

@@ -3,7 +3,6 @@ import './global';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
-import ReactDOM from 'react-dom';
 import { ClientAppView } from './pages/clientapp-view';
 import { rootReducer } from './initialload/root-reducer';
 import { IState } from './initialload/state-interface';
@@ -12,6 +11,7 @@ import './styles/material-common.scss';
 import './styles/fabric.scss';
 import { MuiThemeProvider } from '@material-ui/core';
 import { theme } from './commontheme-css';
+import { createRoot } from 'react-dom/client';
 
 declare module 'react' {
     interface HTMLAttributes<T> {
@@ -29,8 +29,7 @@ export function App() {
     );
 }
 
-// let stringData = localStorage.getItem(`nila-${localStorage.getItem('loginUser')}`);
-let stringData = '';
+let stringData = localStorage.getItem(`nila-${localStorage.getItem('loginUser')}`);
 let previousData: IState = {} as IState;
 if (stringData) {
     try {
@@ -46,12 +45,11 @@ export const store = createStore(
     applyMiddleware(thunkMiddleware)
 );
 
-ReactDOM.render(
-    <Provider store={store}>
-        <App />
-    </Provider>,
-    document.getElementById('root') as HTMLElement
-);
+const domNode = document.getElementById('root');
+const root = createRoot(domNode);
+root.render(<Provider store={store}>
+    <App />
+</Provider>)
 
 function saveonClose() {
     saveLocalData();
@@ -61,7 +59,7 @@ function saveonClose() {
 window.addEventListener('beforeunload', saveonClose);
 
 window.onerror = () => {
-    // localStorage.removeItem(`nila-${localStorage.getItem('loginUser')}`);
+    localStorage.removeItem(`nila-${localStorage.getItem('loginUser')}`);
 };
 
 function saveLocalData() {
@@ -75,7 +73,7 @@ function saveLocalData() {
 
 export function saveData(state: object) {
     try {
-        // localStorage.setItem(`nila-${localStorage.getItem('loginUser')}`, stringifyData(state));
+        localStorage.setItem(`nila-${localStorage.getItem('loginUser')}`, stringifyData(state));
     } catch {
         console.log('Backup Failed');
     }

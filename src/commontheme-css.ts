@@ -1,4 +1,4 @@
-import { createMuiTheme, createTheme, makeStyles } from "@material-ui/core";
+import { createTheme, makeStyles } from "@material-ui/core";
 
 export const theme = createTheme({
     palette: {
@@ -25,7 +25,7 @@ export const typographyTheme = createTheme({
     }
 });
 
-export const buttonViewTheme = createMuiTheme({
+export const buttonViewTheme = createTheme({
     overrides: {
         MuiButton: {
             startIcon: {

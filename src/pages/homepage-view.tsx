@@ -2,13 +2,14 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { IState } from "src/initialload/state-interface";
 import { Dispatch } from "redux";
-import { MenuPageView } from "./menulists/menus-view";
+// import { MenuPageView } from "./menulists/menus-view";
 import { ChartView } from "./chart";
-import { AppBarView } from "src/component/appbar-view";
+// import { AppBarView } from "src/component/appbar-view";
 import { isNullOrUndefinedOrEmpty } from "src/common";
 import { history } from "src/helper/history";
 import { loginAction } from "./login/login-reducer";
 import { Button, Dialog, DialogActions, DialogTitle } from "@material-ui/core";
+import Layout from "src/component/layout";
 
 function HomePage(props: any) {
 
@@ -34,9 +35,11 @@ function HomePage(props: any) {
     }, []);
 
     return (<>
-        <AppBarView></AppBarView>
-        <MenuPageView />
-        <ChartView></ChartView>
+        {/* <AppBarView></AppBarView>
+        <MenuPageView /> */}
+        <Layout>
+            <ChartView></ChartView>
+        </Layout>
         <Dialog open={props.isConfirm} onClose={() => props.dispatch(loginAction.homeToLogin(false))} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
             <DialogTitle>{"Do you want to logout?"}</DialogTitle>
             <DialogActions className="pb-3">

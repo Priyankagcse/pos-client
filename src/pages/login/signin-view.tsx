@@ -18,10 +18,9 @@ import { version } from "src/version";
 function SigninPage(props: any) {
 
     useEffect(() => {
-        // let accessToken: string = sessionStorage.getItem('accessToken');
-        // let userUuid: string = sessionStorage.getItem('userUuid');
-        let accessToken: string = '';
-        let userUuid: string = null;
+        let accessToken: string = sessionStorage.getItem('accessToken');
+        let userUuid: string = sessionStorage.getItem('userUuid');
+    
         props.dispatch(apiActions.methodAction('get', COMMONAPI(version, userUuid).VERSIONREFRESH, {}, (result: any) => {
             props.dispatch(loginAction.loginUserList(result.userList));
             props.dispatch(menuListAction.getMenuList(result.menuList));
