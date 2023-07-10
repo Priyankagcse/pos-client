@@ -8,8 +8,8 @@ import { ChartView } from "./chart";
 import { isNullOrUndefinedOrEmpty } from "src/common";
 import { history } from "src/helper/history";
 import { loginAction } from "./login/login-reducer";
-import { Button, Dialog, DialogActions, DialogTitle } from "@material-ui/core";
 import Layout from "src/component/layout";
+import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
 
 function HomePage(props: any) {
 

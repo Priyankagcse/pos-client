@@ -4,8 +4,8 @@ import { connect } from "react-redux";
 import { IState } from "src/initialload/state-interface";
 import { Dispatch } from "redux";
 import { menuListAction } from "./menulists-reducer";
-import AddIcon from '@material-ui/icons/Add';
 import { ButtonView } from "src/component/button-view";
+import AddIcon from '@mui/icons-material/Add';
 
 function MenuPage(props: any) {
     let width = (window.innerWidth - 32) / 3;

@@ -1,17 +1,25 @@
 import * as React from 'react';
 import './global';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
-import thunkMiddleware from 'redux-thunk';
 import { ClientAppView } from './pages/clientapp-view';
 import { rootReducer } from './initialload/root-reducer';
 import { IState } from './initialload/state-interface';
 import './styles/common.scss';
 import './styles/material-common.scss';
 import './styles/fabric.scss';
-import { MuiThemeProvider } from '@material-ui/core';
-import { theme } from './commontheme-css';
 import { createRoot } from 'react-dom/client';
+import { configureStore } from '@reduxjs/toolkit';
+import { ThemeProvider } from '@mui/material';
+import { theme } from './commontheme-css';
+// import { createStore, applyMiddleware } from 'redux';
+// import thunkMiddleware from 'redux-thunk';
+
+// "@material-ui/core": "^4.12.4",
+// "@material-ui/icons": "^4.11.3",
+// "@material-ui/lab": "^4.0.0-alpha.61",
+// "@material-ui/pickers": "^3.3.10",
+// "@material-ui/styles": "^4.11.5",
+// "react-material-ui-form-validator": "^3.0.1",
 
 declare module 'react' {
     interface HTMLAttributes<T> {
@@ -23,27 +31,29 @@ declare module 'react' {
 
 export function App() {
     return (
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
             <ClientAppView></ClientAppView>
-        </MuiThemeProvider>
+        </ThemeProvider>
     );
 }
 
-let stringData = localStorage.getItem(`nila-${localStorage.getItem('loginUser')}`);
-let previousData: IState = {} as IState;
-if (stringData) {
-    try {
-        previousData = JSON.parse(stringData) || {};
-    } catch {
-        previousData = {} as IState;
-    }
-}
+// let stringData = localStorage.getItem(`nila-${localStorage.getItem('loginUser')}`);
+// let previousData: IState = {} as IState;
+// if (stringData) {
+//     try {
+//         previousData = JSON.parse(stringData) || {};
+//     } catch {
+//         previousData = {} as IState;
+//     }
+// }
 
-export const store = createStore(
-    rootReducer,
-    {} || previousData,
-    applyMiddleware(thunkMiddleware)
-);
+// export const store = createStore(
+//     rootReducer,
+//     {} || previousData,
+//     applyMiddleware(thunkMiddleware)
+// );
+
+export const store = configureStore({reducer: rootReducer});
 
 const domNode = document.getElementById('root');
 const root = createRoot(domNode);

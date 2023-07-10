@@ -1,11 +1,11 @@
-import { AppBar, Toolbar, Typography } from "@material-ui/core";
 import React from "react";
 import { connect } from "react-redux";
 import { IState } from "src/initialload/state-interface";
 import { Dispatch } from "redux";
-import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { ButtonView } from "./button-view";
 import { loginAction } from "src/pages/login/login-reducer";
+import { AppBar, Toolbar, Typography } from "@mui/material";
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 
 function AppBarList(props: any) {
     return (<div className="a-appbar">

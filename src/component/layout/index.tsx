@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import MenuIcon from '@material-ui/icons/Menu';
-import { Button } from "@material-ui/core";
-import DashboardIcon from '@material-ui/icons/Dashboard';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import { Button } from "@mui/material";
+import MenuIcon from '@mui/icons-material/Menu';
 
 function Layout({children}: any) {
     let [show, setShow] = useState(false);

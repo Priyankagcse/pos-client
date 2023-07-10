@@ -1,4 +1,6 @@
-import { createTheme, makeStyles } from "@material-ui/core";
+import { createTheme } from "@mui/material";
+import { makeStyles } from "@mui/styles";
+
 
 export const theme = createTheme({
     palette: {
@@ -26,17 +28,27 @@ export const typographyTheme = createTheme({
 });
 
 export const buttonViewTheme = createTheme({
-    overrides: {
-        MuiButton: {
-            startIcon: {
-                marginLeft: '1px',
-                marginRight: '1px'
-            }
+    // overrides: {
+    //     MuiButton: {
+    //         startIcon: {
+    //             marginLeft: '1px',
+    //             marginRight: '1px'
+    //         }
+    //     }
+    // }
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          startIcon: {
+              marginLeft: '1px',
+              marginRight: '1px'
+          }
         }
+      }
     }
 });
 
-export const listStyles = makeStyles((theme) => ({
+export const listStyles = makeStyles((theme: any) => ({
     root: {
         width: '100%',
         backgroundColor: theme.palette.background.paper,
