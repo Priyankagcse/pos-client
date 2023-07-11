@@ -6,9 +6,9 @@ export const COMMONAPI = (firstParam?: any, secondParam?: any) => {
     };
 };
 
-export const USERAPI = (uuid?: string) => {
+export const USERAPI = (uuid?: string, companyUuid?: string) => {
     return {
-        GETBYID: API_URL + `getUser/${uuid}`,
+        GETBYID: API_URL + `getUser/${uuid}/${companyUuid}`,
         POST: API_URL + 'user',
         PUT: API_URL + 'user'
     };

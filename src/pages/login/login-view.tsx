@@ -29,7 +29,7 @@ function LoginPageView(props: any) {
             props.dispatch(alertAction.error('Username and Password Mismatch'));
         } else {
             apiActions.loginAction((info: any) => {
-                props.dispatch(apiActions.methodAction('get', USERAPI(alreadyPresent[0]['uuid']).GETBYID, {}, (res: any) => {
+                props.dispatch(apiActions.methodAction('get', USERAPI(alreadyPresent[0]['uuid'], alreadyPresent[0]['companyUuid']).GETBYID, {}, (res: any) => {
                     sessionStorage.setItem('accessToken', '111222333');
                     sessionStorage.setItem('userUuid', alreadyPresent[0]['uuid']);
                     props.dispatch(loginAction.loginCurrentUser(res.data));
