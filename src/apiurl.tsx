@@ -13,3 +13,12 @@ export const USERAPI = (uuid?: string, companyUuid?: string) => {
         PUT: API_URL + 'user'
     };
 };
+
+export const PRODUCTAPI = (firstParam?: any) => {
+    return {
+        POST: API_URL + 'product',
+        PUT: API_URL + 'product',
+        GET: API_URL + `product/${firstParam}`,
+        DELETE: API_URL + 'product'
+    };
+};

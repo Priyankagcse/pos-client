@@ -1,13 +1,16 @@
 import moment from "moment";
 import CryptoJS from "crypto-js";
+import { store } from "./App";
 
 export function addCreatedBy(data: any) {
     data.createdOn = moment(new Date()).format("YYYY-MM-DD h:mm:ss");
+    data.createdBy = store?.getState()?.loginUser?.loginCurrentUser?.username || '';
     return data;
 }
 
 export function addModifyedBy(data: any) {
     data.lastModifiedOn = moment(new Date()).format("YYYY-MM-DD h:mm:ss");
+    data.lastModifiedBy = store?.getState()?.loginUser?.loginCurrentUser?.username || '';
     return data;
 }
 

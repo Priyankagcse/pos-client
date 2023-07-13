@@ -19,9 +19,9 @@ function Layout({children, menus}: any) {
             </Button>
             <a href="#" className="navbar-brand col-md-3 col-lg-2 me-0 p-2 fs-6 ">Company Name</a>
         </header>
-        <div className="container-fluid h-100">
+        <div className="container-fluid" style={{height: 'calc(100% - 36px)'}}>
             <div className="row h-100">
-                <div className="sidebar col-md-3 col-lg-2 p-0 bg-body-tertiary">
+                <div className="sidebar col-md-3 col-lg-2 p-0 bg-body-tertiary h-100 overflow-auto">
                     <div className={"offcanvas-lg offcanvas-start bg-body-tertiary " + (show ? "show" : "")}
                         tabIndex={-1} id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
                         <div className="offcanvas-header">
@@ -41,7 +41,7 @@ function Layout({children, menus}: any) {
                         </div>
                     </div>
                 </div>
-                <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4 h-100 overflow-auto">
                     <Router history={history}>
                         <Switch>
                             <Route path="/home/:anyLink" component={HomeRouter} />

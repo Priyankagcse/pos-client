@@ -18,7 +18,7 @@ function DropDown(props: any) {
     }, [props.dataSource]);
     
     return (<>
-        <FormControl className={props.className || "col-sm-12"} required={props.required}>
+        <FormControl className={props.className || "col-sm-12"} required={props.required} variant={props.variant}>
             <InputLabel>{props.label}</InputLabel>
             {dataSource.length ? <Select value={props.value} className={'text-capitalize'} disabled={props.disabled}>
                 {(dataSource || []).map((line: any, ind: number) => {
