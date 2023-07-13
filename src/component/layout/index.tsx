@@ -2,9 +2,15 @@ import React, { useState } from "react";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import { Button } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
+import { Route, Router, Switch } from "react-router";
+import { HomeRouter } from "src/initialload/router";
+import { history } from "../../helper/history";
 
-function Layout({children}: any) {
+function Layout({children, menus}: any) {
     let [show, setShow] = useState(false);
+    const menuClick = (menu: any) => {
+        history.push(menu.pathTemplate)
+    };
 
     return <>
         <header className="sticky-top bg-gray flex-md-nowrap p-0 shadow bg-white">
@@ -25,18 +31,22 @@ function Layout({children}: any) {
                         </div>
                         <div className="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
                             <ul className="nav flex-column">
-                                <li className="nav-item">
-                                    <a href="#" className="nav-link d-flex align-items-center gap-2">
+                                {menus.map((menu: any, index: number) => <li key={index} className="nav-item" onClick={() => menuClick(menu)}>
+                                    <div className="nav-link d-flex align-items-center gap-2">
                                         <DashboardIcon></DashboardIcon>
-                                        Dashboard
-                                    </a>
-                                </li>
+                                        {menu.displayName}
+                                    </div>
+                                </li>)}
                             </ul>
                         </div>
                     </div>
                 </div>
                 <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                    {children}
+                    <Router history={history}>
+                        <Switch>
+                            <Route path="/home/:anyLink" component={HomeRouter} />
+                        </Switch>
+                    </Router>
                 </main>
             </div>
         </div>

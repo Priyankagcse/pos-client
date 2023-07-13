@@ -2,12 +2,12 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { IState } from "src/initialload/state-interface";
 import { Dispatch } from "redux";
-import { ChartView } from "./chart";
 import { isNullOrUndefinedOrEmpty } from "src/common";
 import { history } from "src/helper/history";
 import { loginAction } from "./login/login-reducer";
 import Layout from "src/component/layout";
 import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
+import Product from "src/component/product";
 // import { MenuPageView } from "./menulists/menus-view";
 // import { AppBarView } from "src/component/appbar-view";
 
@@ -35,10 +35,11 @@ function HomePage(props: any) {
     }, []);
 
     return (<>
-        {/* <AppBarView></AppBarView>
-        <MenuPageView /> */}
-        <Layout>
-            <ChartView></ChartView>
+        {/* <AppBarView></AppBarView> */}
+        <Layout
+            menus={props.menus}
+        >
+            <Product></Product>
         </Layout>
         <Dialog open={props.isConfirm} onClose={() => props.dispatch(loginAction.homeToLogin(false))}
             aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
@@ -57,7 +58,8 @@ function HomePage(props: any) {
 
 const mapStateToProps = function(state: IState) {
     return {
-        isConfirm: state.loginUser.isHomeToLogin
+        isConfirm: state.loginUser.isHomeToLogin,
+        menus: state.menuList.menus
     };
 };
 

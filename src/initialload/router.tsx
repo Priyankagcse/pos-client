@@ -4,11 +4,13 @@ import { Route, Switch } from 'react-router-dom';
 import { ButtonView } from 'src/component/button-view';
 import { IState } from './state-interface';
 import { commonView } from 'src/pages/common-view';
+import { history } from 'src/helper/history';
+import Product from 'src/component/product';
 
 function NotFound() {
     return <div className={'m-4'} align={'center'}>
         <h4>Page not found Or you didn't have permission to view the page</h4>
-        <ButtonView className={'a-warning'}>Go Back</ButtonView>
+        <ButtonView className={'a-warning'} onClick={() => history.goBack()}>Go Back</ButtonView>
     </div>;
 }
 
@@ -26,8 +28,8 @@ function HomeRouterView(props: any) {
 
     const getComponent = (name: string) => {
         switch (name) {
-            case 'menu1':
-                return commonView;
+            case 'Product':
+                return Product;
             case 'menu2':
                 return commonView;
             case 'menu3':

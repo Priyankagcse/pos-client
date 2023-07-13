@@ -3,7 +3,6 @@ import { Route, Router, Switch } from "react-router-dom";
 import { history } from "../../helper/history";
 import { HomePageView } from "../homepage-view";
 import { LoginPage } from "./login-view";
-import { HomeRouter } from "../../initialload/router";
 import { menuListAction } from "../menulists/menulists-reducer";
 import { loginAction } from "./login-reducer";
 import { RegisterView } from "./register-view";
@@ -41,7 +40,7 @@ function SigninPage(props: any) {
             {props.loggingIn ?
                 <React.Fragment>
                     <Switch>
-                        <Route path="/home/:anyLink" component={HomeRouter} />
+                        <Route path="/home/:anyLink" component={HomePageView} />
                         <Route path="/home" component={HomePageView} />
                     </Switch>
                 </React.Fragment> :
