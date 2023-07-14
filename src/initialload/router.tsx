@@ -5,7 +5,8 @@ import { ButtonView } from 'src/component/button-view';
 import { IState } from './state-interface';
 import { commonView } from 'src/pages/common-view';
 import { history } from 'src/helper/history';
-import Product from 'src/component/product';
+import Product from 'src/pages/product';
+import Bill from 'src/pages/bill';
 
 function NotFound() {
     return <div className={'m-4'} align={'center'}>
@@ -30,8 +31,8 @@ function HomeRouterView(props: any) {
         switch (name) {
             case 'Product':
                 return Product;
-            case 'menu2':
-                return commonView;
+            case 'Bill':
+                return Bill;
             case 'menu3':
                 return commonView;
             default:

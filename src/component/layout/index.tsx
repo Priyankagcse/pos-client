@@ -1,15 +1,17 @@
 import React, { useState } from "react";
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import { Button } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import { Route, Router, Switch } from "react-router";
 import { HomeRouter } from "src/initialload/router";
 import { history } from "../../helper/history";
+import { getMenuIcon } from "./config/config";
 
 function Layout({children, menus}: any) {
     let [show, setShow] = useState(false);
+    let [selectedMenu, setMenu] = useState({} as any);
     const menuClick = (menu: any) => {
         history.push(menu.pathTemplate)
+        setMenu(menu);
     };
 
     return <>
@@ -31,12 +33,16 @@ function Layout({children, menus}: any) {
                         </div>
                         <div className="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
                             <ul className="nav flex-column">
-                                {menus.map((menu: any, index: number) => <li key={index} className="nav-item" onClick={() => menuClick(menu)}>
-                                    <div className="nav-link d-flex align-items-center gap-2">
-                                        <DashboardIcon></DashboardIcon>
-                                        {menu.displayName}
-                                    </div>
-                                </li>)}
+                                {menus.map((menu: any, index: number) => {
+                                    let Icon = getMenuIcon(menu.menuName);
+                                    return <li key={index} className={"nav-item " + (menu.menuName === selectedMenu.menuName ? "active" : "")}
+                                        onClick={() => menuClick(menu)}>
+                                        <div className="nav-link d-flex align-items-center gap-2">
+                                            <Icon></Icon>
+                                            {menu.displayName}
+                                        </div>
+                                    </li>
+                                })}
                             </ul>
                         </div>
                     </div>
