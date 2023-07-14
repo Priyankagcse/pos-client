@@ -22,16 +22,22 @@ function Layout({children, menus}: any) {
         <div className="container-fluid" style={{height: 'calc(100% - 36px)'}}>
             <div className="row h-100">
                 <div className="sidebar col-md-3 col-lg-2 p-0 bg-body-tertiary h-100 overflow-auto">
-                    <div className={"offcanvas-lg offcanvas-start bg-body-tertiary " + (show ? "show" : "")}
+                    <div className={"offcanvas-lg offcanvas-start bg-body-tertiary h-100 " + (show ? "show" : "")}
                         tabIndex={-1} id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
                         <div className="offcanvas-header">
                             <h5 className="offcanvas-title" id="sidebarMenuLabel">Company name</h5>
                             <Button type="button" className="btn-close" data-bs-dismiss="offcanvas"
                                 data-bs-target="#sidebarMenu" aria-label="Close" onClick={() => setShow(false)}></Button>
                         </div>
-                        <div className="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
-                            <ul className="nav flex-column">
-                                {menus.map((menu: any, index: number) => <li key={index} className="nav-item" onClick={() => menuClick(menu)}>
+                        <div className="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto h-100">
+                            <ul className="nav flex-column h-100">
+                                {menus.filter((line: any) => +line.orderNo !== -1).map((menu: any, index: number) => <li key={index} className="nav-item" onClick={() => menuClick(menu)}>
+                                    <div className="nav-link d-flex align-items-center gap-2">
+                                        <DashboardIcon></DashboardIcon>
+                                        {menu.displayName}
+                                    </div>
+                                </li>)}
+                                {menus.filter((line: any) => +line.orderNo === -1).map((menu: any, index: number) => <li key={index} className="nav-item mt-auto" onClick={() => menuClick(menu)}>
                                     <div className="nav-link d-flex align-items-center gap-2">
                                         <DashboardIcon></DashboardIcon>
                                         {menu.displayName}
