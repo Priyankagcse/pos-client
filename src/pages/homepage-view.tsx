@@ -7,7 +7,7 @@ import { history } from "src/helper/history";
 import { loginAction } from "./login/login-reducer";
 import Layout from "src/component/layout";
 import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
-import Product from "src/component/product";
+import Product from "src/pages/product";
 // import { MenuPageView } from "./menulists/menus-view";
 // import { AppBarView } from "src/component/appbar-view";
 
