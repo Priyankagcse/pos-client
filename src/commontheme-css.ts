@@ -17,6 +17,18 @@ export const theme = createTheme({
         contrastText: '#000',
       },
     },
+    components: {
+      MuiTablePagination: {
+        styleOverrides: {
+          selectLabel: {
+            marginBottom: 0
+          },
+          displayedRows: {
+            marginBottom: 0
+          } 
+        }
+      }
+    }
 });
 
 export const typographyTheme = createTheme({

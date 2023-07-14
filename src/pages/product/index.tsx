@@ -9,7 +9,7 @@ import { Dispatch } from "redux";
 import { DropDownView } from "../../component/dropdown-view";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import MUIDataTable from "mui-datatables";
+import MUIDataTable, { MUIDataTableColumn, MUIDataTableOptions } from "mui-datatables";
 
 let taxData = [
     { text: '0%', value: '0' },
@@ -81,49 +81,41 @@ function Product(props: any) {
         }
     }
 
-    const columns: any[] = [
+    const columns: MUIDataTableColumn[] = [
         {
             name: 'partNumber',
             label: 'Part Number',
-            width: 150,
-            editable: true,
         },
         {
             name: 'productName',
             label: 'Product Name',
-            width: 250,
-            editable: true,
         },
         {
             name: 'gst',
             label: 'GST',
-            width: 150,
-            editable: true
         },
         {
             name: 'price',
             label: 'Price',
-            width: 150,
-            editable: true,
         },
         {
             name: 'productDescription',
             label: 'Product Description',
-            width: 250,
-            editable: true,
         },
-        {   name: 'actions', label: 'Actions', width: 200, customBodyRender: (value: string) => {
-                return (<>
-                    <Button onClick={(e) => onButtonClick(e, value, 'edit')}>
-                    <EditIcon></EditIcon>
-                    </Button>
-                    <Button onClick={(e) => onButtonClick(e, value, 'delete')}>
-                    <DeleteIcon></DeleteIcon>
-                    </Button>
-                </>);
-            },
+        {   name: 'actions', label: 'Actions',
             options: {
-                filter: true,
+                filter: false,
+                
+                customBodyRender: (value: string) => {
+                    return (<>
+                        <Button onClick={(e) => onButtonClick(e, value, 'edit')}>
+                        <EditIcon></EditIcon>
+                        </Button>
+                        <Button onClick={(e) => onButtonClick(e, value, 'delete')}>
+                        <DeleteIcon></DeleteIcon>
+                        </Button>
+                    </>);
+                },
                 setCellProps: () => ({
                   style: {
                     whiteSpace: "nowrap",
@@ -146,10 +138,14 @@ function Product(props: any) {
         }
     ];
 
-    const options = {
+    const options: MUIDataTableOptions = {
         filter: true,
         pagination: true,
-        search: true
+        search: true,
+        selectableRowsHideCheckboxes: true,
+        download: false,
+        print: false,
+        
     }
 
     return <div className="p-3">
