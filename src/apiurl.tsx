@@ -14,11 +14,21 @@ export const USERAPI = (uuid?: string, companyUuid?: string) => {
     };
 };
 
-export const PRODUCTAPI = (firstParam?: any) => {
+export const PRODUCTAPI = (firstParam?: any, secondParam?: any) => {
     return {
         POST: API_URL + 'product',
         PUT: API_URL + 'product',
         GET: API_URL + `product/${firstParam}`,
-        DELETE: API_URL + 'product'
+        DELETE: API_URL + 'product',
+        PRODUCTSEARCH: API_URL + `productSearch/${firstParam}/${secondParam}`,
+    };
+};
+
+export const STOCKAPI = (firstParam?: any) => {
+    return {
+        POST: API_URL + 'stock',
+        PUT: API_URL + 'stock',
+        GET: API_URL + `stock/${firstParam}`,
+        DELETE: API_URL + 'stock'
     };
 };

@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 import { ButtonView } from 'src/component/button-view';
 import { IState } from './state-interface';
-import { commonView } from 'src/pages/common-view';
 import { history } from 'src/helper/history';
 import Product from 'src/pages/product';
 import Bill from 'src/pages/bill';
+import Stock from 'src/pages/stock';
 
 function NotFound() {
     return <div className={'m-4'} align={'center'}>
@@ -33,8 +33,10 @@ function HomeRouterView(props: any) {
                 return Product;
             case 'Bill':
                 return Bill;
-            case 'menu3':
-                return commonView;
+            case 'Logout':
+                return () => <></>;
+            case 'Stock':
+                return Stock;
             default:
                 return () => <NotFound></NotFound>;
         }

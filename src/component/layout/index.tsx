@@ -5,13 +5,19 @@ import { Route, Router, Switch } from "react-router";
 import { HomeRouter } from "src/initialload/router";
 import { history } from "../../helper/history";
 import { getMenuIcon } from "./config/config";
+import { loginAction } from "src/pages/login/login-reducer";
 
-function Layout({children, menus}: any) {
+function Layout({children, menus, props}: any) {
     let [show, setShow] = useState(false);
     let [selectedMenu, setMenu] = useState({} as any);
     const menuClick = (menu: any) => {
-        history.push(menu.pathTemplate)
-        setMenu(menu);
+        if (menu.menuName === 'Logout') {
+            props.dispatch(loginAction.homeToLogin(true));
+            setMenu(menu);
+        } else {
+            history.push(menu.pathTemplate)
+            setMenu(menu);
+        }
     };
 
     return <>
@@ -31,11 +37,15 @@ function Layout({children, menus}: any) {
                             <Button type="button" className="btn-close" data-bs-dismiss="offcanvas"
                                 data-bs-target="#sidebarMenu" aria-label="Close" onClick={() => setShow(false)}></Button>
                         </div>
-                        <div className="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
-                            <ul className="nav flex-column">
+                        <div className="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto h-100">
+                            <ul className="nav flex-column h-100">
                                 {menus.map((menu: any, index: number) => {
                                     let Icon = getMenuIcon(menu.menuName);
-                                    return <li key={index} className={"nav-item " + (menu.menuName === selectedMenu.menuName ? "active" : "")}
+                                    let menuClass = "nav-item " + (menu.menuName === selectedMenu.menuName ? "active" : "");
+                                    if (menu.menuName === 'Empty') {
+                                        menuClass += ' flex-grow-1 invisible';
+                                    }
+                                    return <li key={index} className={menuClass}
                                         onClick={() => menuClick(menu)}>
                                         <div className="nav-link d-flex align-items-center gap-2">
                                             <Icon></Icon>

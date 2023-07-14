@@ -8,8 +8,6 @@ import { loginAction } from "./login/login-reducer";
 import Layout from "src/component/layout";
 import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
 import Product from "src/pages/product";
-// import { MenuPageView } from "./menulists/menus-view";
-// import { AppBarView } from "src/component/appbar-view";
 
 function HomePage(props: any) {
 
@@ -24,7 +22,7 @@ function HomePage(props: any) {
                         if (getLastPathName === 'login') {
                             history.push('/home');
                             props.dispatch(loginAction.homeToLogin(true));
-                        } else if (getLastPathName === 'home') {
+                        } else {
                             history.push('/login');
                             props.dispatch(loginAction.homeToLogin(false));
                         }
@@ -35,10 +33,7 @@ function HomePage(props: any) {
     }, []);
 
     return (<>
-        {/* <AppBarView></AppBarView> */}
-        <Layout
-            menus={props.menus}
-        >
+        <Layout menus={props.menus} props={props}>
             <Product></Product>
         </Layout>
         <Dialog open={props.isConfirm} onClose={() => props.dispatch(loginAction.homeToLogin(false))}

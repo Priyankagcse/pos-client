@@ -19,8 +19,12 @@ let taxData = [
     { text: '28%', value: '28' }
 ];
 
+let uomList = [
+    { text: 'Count', value: 'count' }
+];
+
 function Product(props: any) {
-    let [state, setState] = useState({} as any);
+    let [state, setState] = useState({uom: 'count', gst: '0'} as any);
     let [commonState, setCommonState] = useState({openConfirm: false, gridRows: [], editRowData: {}, actionType: '', openForm: false} as any);
     const handleChange = (field: any, value: any) => {
         setState((prevState: any) => ({
@@ -59,7 +63,7 @@ function Product(props: any) {
     const onButtonClick = (event: any, rowData: any, flag: string) => {
         if (flag === 'edit') {
             setCommonState({ ...commonState, openForm: true, editRowData: rowData, actionType: 'edit'});
-            setState({ partNumber: rowData.partNumber, productName: rowData.productName, gst: rowData.gst,
+            setState({ partNumber: rowData.partNumber, productName: rowData.productName, uom: rowData.uom, gst: rowData.gst,
                 price: rowData.price, productDescription: rowData.productDescription });
         } else {
             setCommonState({ ...commonState, openConfirm: true, editRowData: rowData, actionType: 'delete'});
@@ -91,6 +95,10 @@ function Product(props: any) {
             label: 'Product Name',
         },
         {
+            name: 'uom',
+            label: 'UOM',
+        },
+        {
             name: 'gst',
             label: 'GST',
         },
@@ -105,36 +113,35 @@ function Product(props: any) {
         {   name: 'actions', label: 'Actions',
             options: {
                 filter: false,
-                
                 customBodyRender: (value: string) => {
                     return (<>
                         <Button onClick={(e) => onButtonClick(e, value, 'edit')}>
-                        <EditIcon></EditIcon>
+                            <EditIcon></EditIcon>
                         </Button>
                         <Button onClick={(e) => onButtonClick(e, value, 'delete')}>
-                        <DeleteIcon></DeleteIcon>
+                            <DeleteIcon></DeleteIcon>
                         </Button>
                     </>);
                 },
                 setCellProps: () => ({
-                  style: {
-                    whiteSpace: "nowrap",
-                    position: "sticky",
-                    left: "0",
-                    background: "white",
-                    zIndex: 100
-                  }
+                    style: {
+                        whiteSpace: "nowrap",
+                        position: "sticky",
+                        left: "0",
+                        background: "white",
+                        zIndex: 100
+                    }
                 }),
                 setCellHeaderProps: () => ({
-                  style: {
-                    whiteSpace: "nowrap",
-                    position: "sticky",
-                    left: 0,
-                    background: "white",
-                    zIndex: 101
-                  }
+                    style: {
+                        whiteSpace: "nowrap",
+                        position: "sticky",
+                        left: 0,
+                        background: "white",
+                        zIndex: 101
+                    }
                 })
-              }
+            }
         }
     ];
 
@@ -154,7 +161,7 @@ function Product(props: any) {
                 <h6 className="col px-0 py-1">Product List</h6>
                 <Button variant="contained" color="primary" onClick={() => {
                     setCommonState({ ...commonState, openForm: true });
-                    setState({ partNumber: '', productName: '', gst: '', price: '', productDescription: '' });
+                    setState({ partNumber: '', productName: '', uom: 'count', gst: '0', price: '', productDescription: '' });
                 }}>Add New</Button>
             </div>
             <MUIDataTable
@@ -183,6 +190,11 @@ function Product(props: any) {
                             onChange={handleChange} value={state.productDescription} multiline={true} />
                     </div>
                     <div className="col-12 col-sm-6 pb-4">
+                        <DropDownView label="UOM" type={'text'} field={'uom'} className={'col-12 '} required
+                            onChange={handleChange} value={state.uom} dataSource={uomList}
+                            fields={{text: 'text', value: 'value'}} variant="standard"></DropDownView>
+                    </div>
+                    <div className="col-12 col-sm-6 pb-4">
                         <DropDownView label="GST" type={'text'} field={'gst'} className={'col-12 '} required
                             onChange={handleChange} value={state.gst} dataSource={taxData}
                             fields={{text: 'text', value: 'value'}} variant="standard"></DropDownView>
@@ -195,7 +207,7 @@ function Product(props: any) {
                         <div className="col-6 col-sm-6 p-0">
                             <Button variant="contained" color="secondary" onClick={() => {
                             setCommonState({ ...commonState, openForm: false });
-                            setState({ partNumber: '', productName: '', gst: '', price: '', productDescription: '' });
+                            setState({ partNumber: '', productName: '', uom: 'count', gst: '0', price: '', productDescription: '' });
                             }}>Cancel</Button>
                         </div>
                         <div className="col-6 col-sm-6 p-0" align="right">
