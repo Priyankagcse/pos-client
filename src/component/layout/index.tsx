@@ -24,7 +24,7 @@ function Layout({children, menus}: any) {
         <div className="container-fluid" style={{height: 'calc(100% - 36px)'}}>
             <div className="row h-100">
                 <div className="sidebar col-md-3 col-lg-2 p-0 bg-body-tertiary h-100 overflow-auto">
-                    <div className={"offcanvas-lg offcanvas-start bg-body-tertiary " + (show ? "show" : "")}
+                    <div className={"offcanvas-lg offcanvas-start bg-body-tertiary h-100 " + (show ? "show" : "")}
                         tabIndex={-1} id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
                         <div className="offcanvas-header">
                             <h5 className="offcanvas-title" id="sidebarMenuLabel">Company name</h5>
