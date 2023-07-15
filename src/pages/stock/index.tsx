@@ -9,7 +9,7 @@ import { PRODUCTAPI, STOCKAPI } from "src/apiurl";
 import { connect } from "react-redux";
 import { IState } from "src/initialload/state-interface";
 import { Dispatch } from "redux";
-import { number2FormatFn } from "src/common";
+import { addCreatedBy, number2FormatFn } from "src/common";
 
 function Stock(props: any) {
     let [state, setState] = useState({productSearchList: []} as any);
@@ -43,9 +43,16 @@ function Stock(props: any) {
 
     const productAdd = () => {
         let filterStockData = state.productSearchList.filter((line: any) => +line.stock > 0);
-        let concatData = (state.stockGridData).concat(filterStockData);
-        handleChange('stockGridData', concatData);
-        setAddProduct(false);
+        let insertData = {
+            stockList: filterStockData,
+            userUuid: props.loginCurrentUser.uuid
+        };
+        addCreatedBy(insertData);
+        props.dispatch(apiActions.methodAction('put', STOCKAPI().STOCKBULKINSERT, insertData, (res: any) => {
+            let concatData = (state.stockGridData).concat(filterStockData);
+            handleChange('stockGridData', concatData);
+            setAddProduct(false);
+        }));        
     }
 
     const getStock = () => {

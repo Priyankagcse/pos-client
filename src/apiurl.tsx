@@ -29,6 +29,7 @@ export const STOCKAPI = (firstParam?: any) => {
         POST: API_URL + 'stock',
         PUT: API_URL + 'stock',
         GET: API_URL + `stock/${firstParam}`,
-        DELETE: API_URL + 'stock'
+        DELETE: API_URL + 'stock',
+        STOCKBULKINSERT: API_URL + 'stockBulkInsert',
     };
 };
