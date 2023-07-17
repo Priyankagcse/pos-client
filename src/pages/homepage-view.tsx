@@ -54,7 +54,8 @@ function HomePage(props: any) {
 const mapStateToProps = function(state: IState) {
     return {
         isConfirm: state.loginUser.isHomeToLogin,
-        menus: state.menuList.menus
+        menus: state.menuList.menus,
+        companyData: state.companyReducer.companyData
     };
 };
 

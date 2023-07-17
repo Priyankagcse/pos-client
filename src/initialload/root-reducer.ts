@@ -4,11 +4,13 @@ import { alertReducer } from "src/pages/alert/alert-reducer";
 import { menuList } from "src/pages/menulists/menulists-reducer";
 import { progress } from "src/pages/progress/progress-reducer";
 import { loginUser } from "../pages/login/login-reducer";
+import { companyReducer } from "../pages/login/company-reducer";
 
 export let rootReducer: any = combineReducers({
     loginUser: loginUser,
     menuList: menuList,
     alertReducer: alertReducer,
     progress: progress,
-    commonReducer: commonReducer
+    commonReducer: commonReducer,
+    companyReducer: companyReducer
 });

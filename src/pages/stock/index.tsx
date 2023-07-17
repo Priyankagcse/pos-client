@@ -15,7 +15,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 
 function Stock(props: any) {
-    let [state, setState] = useState({productSearchList: []} as any);
+    let [state, setState] = useState({productSearchList: [], stockGridData: []} as any);
     let [addProduct, setAddProduct] = useState(false);
     const handleChange = (field: any, value: any) => {
         setState((prevState: any) => ({

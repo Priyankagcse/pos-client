@@ -26,7 +26,11 @@ function Layout({children, menus, props}: any) {
                 className="d-sm-none">
                 <MenuIcon ></MenuIcon>
             </Button>
-            <div className="navbar-brand col-md-3 col-lg-2 me-0 p-2 fs-6 ">Company Name</div>
+            <div className="navbar-brand col-md-3 col-lg-2 me-0 p-2 fs-6 ">
+                <span>{props.companyData.companyName}</span>
+                &nbsp; - &nbsp;
+                <span>{props.companyData.orgName}</span>
+            </div>
         </header>
         <div className="container-fluid" style={{height: 'calc(100% - 36px)'}}>
             <div className="row h-100">
@@ -34,7 +38,11 @@ function Layout({children, menus, props}: any) {
                     <div className={"offcanvas-lg offcanvas-start bg-body-tertiary h-100 " + (show ? "show" : "")}
                         tabIndex={-1} id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
                         <div className="offcanvas-header">
-                            <h5 className="offcanvas-title" id="sidebarMenuLabel">Company name</h5>
+                            <h5 className="offcanvas-title" id="sidebarMenuLabel">
+                                <span>{props.companyData.companyName}</span>
+                                &nbsp; - &nbsp;
+                                <span>{props.companyData.orgName}</span>
+                            </h5>
                             <Button type="button" className="btn-close" data-bs-dismiss="offcanvas"
                                 data-bs-target="#sidebarMenu" aria-label="Close" onClick={() => setShow(false)}></Button>
                         </div>

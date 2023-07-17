@@ -20,7 +20,7 @@ let taxData = [
     { text: '28%', value: '28' }
 ];
 
-let uomList = [
+export let uomList = [
     { text: 'Count', value: 'count' }
 ];
 
@@ -98,10 +98,19 @@ function Product(props: any) {
         {
             name: 'uom',
             label: 'UOM',
+            options: {         
+                customBodyRender: (value: string) => {
+                    let filterData = uomList.filter((line: any) => line.value === value);
+                    return `${filterData.length ? filterData[0]['text'] : ''}`;
+                }
+            }
         },
         {
             name: 'gst',
             label: 'GST',
+            options: {         
+                customBodyRender: (value: string, tableMeta: any) => `${value}%`
+            }
         },
         {
             name: 'price',

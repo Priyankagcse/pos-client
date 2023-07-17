@@ -14,4 +14,7 @@ export interface IState {
     commonReducer: {
         spentType: object[], transferType: object[]
     };
+    companyReducer: {
+        companyData: object
+    };
 }

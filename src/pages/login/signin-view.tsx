@@ -13,6 +13,7 @@ import { Dispatch } from "redux";
 import { apiActions } from "src/action/action";
 import { COMMONAPI } from "src/apiurl";
 import { version } from "src/version";
+import { companyAction } from "./company-reducer";
 
 function SigninPage(props: any) {
 
@@ -23,6 +24,7 @@ function SigninPage(props: any) {
         props.dispatch(apiActions.methodAction('get', COMMONAPI(version, userUuid).VERSIONREFRESH, {}, (result: any) => {
             props.dispatch(loginAction.loginUserList(result.userList));
             props.dispatch(menuListAction.getMenuList(result.menuList));
+            props.dispatch(companyAction.getCompany(result.companyData[0]));
             let userObj = result.userList.filter((line: any) => line.uuid === userUuid);
             props.dispatch(loginAction.loginCurrentUser(userObj[0] || {}));
         }));
