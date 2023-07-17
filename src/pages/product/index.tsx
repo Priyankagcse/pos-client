@@ -10,6 +10,7 @@ import { DropDownView } from "../../component/dropdown-view";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MUIDataTable, { MUIDataTableColumn, MUIDataTableOptions } from "mui-datatables";
+import AddIcon from '@mui/icons-material/Add';
 
 let taxData = [
     { text: '0%', value: '0' },
@@ -113,12 +114,12 @@ function Product(props: any) {
         {   name: 'actions', label: 'Actions',
             options: {
                 filter: false,
-                customBodyRender: (value: string) => {
+                customBodyRender: (value: string, tableMeta: any) => {
                     return (<>
-                        <Button onClick={(e) => onButtonClick(e, value, 'edit')}>
+                        <Button onClick={(e) => onButtonClick(e, tableMeta.tableData[tableMeta.rowIndex], 'edit')}>
                             <EditIcon></EditIcon>
                         </Button>
-                        <Button onClick={(e) => onButtonClick(e, value, 'delete')}>
+                        <Button onClick={(e) => onButtonClick(e, tableMeta.tableData[tableMeta.rowIndex], 'delete')}>
                             <DeleteIcon></DeleteIcon>
                         </Button>
                     </>);
@@ -162,7 +163,7 @@ function Product(props: any) {
                 <Button variant="contained" color="primary" onClick={() => {
                     setCommonState({ ...commonState, openForm: true });
                     setState({ partNumber: '', productName: '', uom: 'count', gst: '0', price: '', productDescription: '' });
-                }}>Add New</Button>
+                }}><AddIcon/>Add New</Button>
             </div>
             <MUIDataTable
                 title={""}
@@ -218,7 +219,7 @@ function Product(props: any) {
             </form>
         </div>
         <Dialog open={commonState.openConfirm} onClose={() => stateReset()}>
-            <DialogTitle>{"Do you want to Delete the Product?"}</DialogTitle>
+            <DialogTitle>{"Do you want to delete the product?"}</DialogTitle>
             <DialogActions className="pb-3">
                 <Button variant="contained" color="primary" onClick={() => prodDelete()}>Yes</Button>
                 <Button onClick={() => stateReset()} autoFocus>No</Button>

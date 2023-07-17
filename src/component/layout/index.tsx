@@ -22,10 +22,11 @@ function Layout({children, menus, props}: any) {
 
     return <>
         <header className="sticky-top bg-gray flex-md-nowrap p-0 shadow bg-white">
-            <Button data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation" onClick={() => setShow(true)}>
+            <Button data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation" onClick={() => setShow(true)}
+                className="d-sm-none">
                 <MenuIcon ></MenuIcon>
             </Button>
-            <a href="#" className="navbar-brand col-md-3 col-lg-2 me-0 p-2 fs-6 ">Company Name</a>
+            <div className="navbar-brand col-md-3 col-lg-2 me-0 p-2 fs-6 ">Company Name</div>
         </header>
         <div className="container-fluid" style={{height: 'calc(100% - 36px)'}}>
             <div className="row h-100">

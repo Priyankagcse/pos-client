@@ -1,4 +1,4 @@
-import { Button, ListItem } from "@mui/material";
+import { Button, IconButton, ListItem } from "@mui/material";
 import React, {useEffect, useState } from "react";
 import { columns } from "./config/config";
 import 'dayjs/locale/de';
@@ -9,7 +9,10 @@ import { PRODUCTAPI, STOCKAPI } from "src/apiurl";
 import { connect } from "react-redux";
 import { IState } from "src/initialload/state-interface";
 import { Dispatch } from "redux";
-import { addCreatedBy, number2FormatFn } from "src/common";
+import { addCreatedBy, } from "src/common";
+import SaveIcon from '@mui/icons-material/Save';
+import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
 
 function Stock(props: any) {
     let [state, setState] = useState({productSearchList: []} as any);
@@ -62,30 +65,29 @@ function Stock(props: any) {
     }
 
     return <div>
-        <div className="py-2">
-            <h6>Stock</h6>
+        <div className="d-flex py-2">
+            <h6 className="col px-0 py-1">Stock</h6>
+            {!addProduct && <Button variant="contained" color="primary" onClick={() => setAddProduct(true)}><AddIcon/>Add Stock</Button>}
         </div>
-        <div className="row bg-light p-2">
-            {!addProduct && <div className="col-12"align="right">
-                <Button onClick={() => setAddProduct(true)}>Add Product</Button>
-            </div>}
-            <div className={"col-12 p-2 row " + (addProduct ? "col-sm-9" : "col-sm-12")}>
-                <div className="col-12 pe-0">
-                    <MUIDataTable
-                        title={""}
-                        data={state.stockGridData}
-                        columns={columns}
-                        options={{}}
-                    />                    
-                </div>
+        <div className="row m-0">
+            <div className={"col-12 px-0 py-2 " + (addProduct ? "col-sm-9" : "col-sm-12")}>
+                <MUIDataTable
+                    title={""}
+                    data={state.stockGridData}
+                    columns={columns}
+                    options={{}}
+                />                    
             </div>
             {addProduct && <div className="col-12 col-sm-3">
-                <div className="d-flex justify-content-end">
-                    <Button onClick={() => productAdd()}>Add</Button>
-                    <Button onClick={() => setAddProduct(false)}>Cancel</Button>
+                <div className="row m-0 pb-3">
+                    <div className="col px-0 py-2">Search Product</div>
+                    <div className="col-4 px-0">
+                        <IconButton onClick={() => productAdd()}><SaveIcon/></IconButton>
+                        <IconButton onClick={() => setAddProduct(false)}><CloseIcon/></IconButton>
+                    </div>
                 </div>
-                <div className="col-12">
-                    <TextFieldView label="Product Name" type={'text'} field={'productName'} className={'col-12'} required
+                <div className="col-12 p-0">
+                    <TextFieldView label="Search" type={'text'} field={'productName'} className={'col-12'} required
                         onChange={handleChange} value={state.productName} onKeyDown={(event: any) => {
                             if (event.keyCode === 13) {
                                 productSearch();
@@ -93,21 +95,16 @@ function Stock(props: any) {
                         }} />
                 </div>
                 {state.productSearchList.map((line: any, ind: number) => {
-                    return <ListItem className="border-bottom">
-                        <div className={'col-12 col-sm-12 row m-0'}>
-                            <div className="col">
-                                <div>{line.productName}</div>
+                    return <ListItem className="border-bottom px-0" key={ind}>
+                            <div className="col p-0 lh-16">
                                 <div className="text-secondary">{line.partNumber}</div>
-                                <div className="text-secondary">{line.gst}%</div>
-                                <div className="text-secondary">{line.uom}</div>
-                                <div className="fw-bold">{number2FormatFn(line.price)}</div>
-                                <div className="text-secondary">{line.productDescription}</div>
-                                <div className="col-12">
-                                    <TextFieldView label="stock" type={'number'} field={'stock'} className={'col-12'} required
-                                        onChange={(field: any, value: any) => stockUpdate(line, value)} value={state.stock} />
-                                </div>
+                                <div>{line.productName}</div>
+                                <div className="text-secondary fs-12">{line.productDescription}</div>
                             </div>
-                        </div>
+                            <div className="col-3 p-0">
+                                <TextFieldView label="Stock" type={'number'} field={'stock'} className={'col-12'} required
+                                    onChange={(field: any, value: any) => stockUpdate(line, value)} value={state.stock} />
+                            </div>
                     </ListItem>
                 })}
             </div>}
