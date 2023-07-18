@@ -2,7 +2,7 @@ import { Button, IconButton, ListItem } from "@mui/material";
 import React, {useEffect, useState } from "react";
 import { columns } from "./config/config";
 import 'dayjs/locale/de';
-import MUIDataTable from "mui-datatables";
+import MUIDataTable, { MUIDataTableOptions } from "mui-datatables";
 import { TextFieldView } from "src/component/textfield-view";
 import { apiActions } from "src/action/action";
 import { PRODUCTAPI, STOCKAPI } from "src/apiurl";
@@ -64,6 +64,15 @@ function Stock(props: any) {
         }));
     }
 
+    const options: MUIDataTableOptions = {
+        filter: true,
+        pagination: true,
+        search: true,
+        selectableRowsHideCheckboxes: true,
+        download: false,
+        print: false,
+    }
+
     return <div>
         <div className="d-flex py-2">
             <h6 className="col px-0 py-1">Stock</h6>
@@ -75,7 +84,7 @@ function Stock(props: any) {
                     title={""}
                     data={state.stockGridData}
                     columns={columns}
-                    options={{}}
+                    options={options}
                 />                    
             </div>
             {addProduct && <div className="col-12 col-sm-3">

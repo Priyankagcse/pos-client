@@ -1,5 +1,5 @@
 import React, {useEffect, useState } from "react";
-import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogTitle, IconButton } from "@mui/material";
 import { TextFieldView } from "../../component/textfield-view";
 import { apiActions } from "src/action/action";
 import { PRODUCTAPI } from "src/apiurl";
@@ -122,15 +122,15 @@ function Product(props: any) {
         },
         {   name: 'actions', label: 'Actions',
             options: {
-                filter: false,
+                filter: false, sort: false,
                 customBodyRender: (value: string, tableMeta: any) => {
                     return (<>
-                        <Button onClick={(e) => onButtonClick(e, tableMeta.tableData[tableMeta.rowIndex], 'edit')}>
+                        <IconButton onClick={(e) => onButtonClick(e, tableMeta.tableData[tableMeta.rowIndex], 'edit')}>
                             <EditIcon></EditIcon>
-                        </Button>
-                        <Button onClick={(e) => onButtonClick(e, tableMeta.tableData[tableMeta.rowIndex], 'delete')}>
+                        </IconButton>
+                        <IconButton onClick={(e) => onButtonClick(e, tableMeta.tableData[tableMeta.rowIndex], 'delete')}>
                             <DeleteIcon></DeleteIcon>
-                        </Button>
+                        </IconButton>
                     </>);
                 },
                 setCellProps: () => ({
@@ -138,7 +138,7 @@ function Product(props: any) {
                         whiteSpace: "nowrap",
                         position: "sticky",
                         left: "0",
-                        background: "white",
+                        // background: "white",
                         zIndex: 100
                     }
                 }),

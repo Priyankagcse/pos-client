@@ -32,9 +32,9 @@ function Layout({children, menus, props}: any) {
                 <span>{props.companyData.orgName}</span>
             </div>
         </header>
-        <div className="container-fluid" style={{height: 'calc(100% - 36px)'}}>
+        <div className="container-fluid" style={{height: 'calc(100% - 40px)'}}>
             <div className="row h-100">
-                <div className="sidebar col-md-3 col-lg-2 p-0 bg-body-tertiary h-100 overflow-auto">
+                <div className="sidebar col-md-3 col-lg-2 p-0 bg-body-tertiary ">
                     <div className={"offcanvas-lg offcanvas-start bg-body-tertiary h-100 " + (show ? "show" : "")}
                         tabIndex={-1} id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
                         <div className="offcanvas-header">
@@ -66,7 +66,7 @@ function Layout({children, menus, props}: any) {
                         </div>
                     </div>
                 </div>
-                <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4 h-100 overflow-auto">
+                <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                     <Router history={history}>
                         <Switch>
                             <Route path="/home/:anyLink" component={HomeRouter} />
