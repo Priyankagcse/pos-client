@@ -21,6 +21,7 @@ export const PRODUCTAPI = (firstParam?: any, secondParam?: any) => {
         GET: API_URL + `product/${firstParam}`,
         DELETE: API_URL + 'product',
         PRODUCTSEARCH: API_URL + `productSearch/${firstParam}/${secondParam}`,
+        GETPRODUCT: API_URL + 'getProduct'
     };
 };
 

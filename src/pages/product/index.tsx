@@ -26,7 +26,7 @@ export let uomList = [
 
 function Product(props: any) {
     let [state, setState] = useState({uom: 'count', gst: '0'} as any);
-    let [commonState, setCommonState] = useState({openConfirm: false, gridRows: [], editRowData: {}, actionType: '', openForm: false} as any);
+    let [commonState, setCommonState] = useState({openConfirm: false, gridRows: [], editRowData: {}, actionType: '', openForm: false, perPageCount: 5, gridCount: 0} as any);
     const handleChange = (field: any, value: any) => {
         setState((prevState: any) => ({
             ...prevState,
@@ -35,9 +35,7 @@ function Product(props: any) {
     };
 
     useEffect(() => {
-        props.dispatch(apiActions.methodAction('get', PRODUCTAPI(props.loginCurrentUser.companyUuid).GET, {}, (result: any) => {
-            setCommonState({ ...commonState, gridRows: result.data || []});
-        }));
+        changePage(0);
     }, []);
 
     const submit = () => {
@@ -157,13 +155,33 @@ function Product(props: any) {
 
     const options: MUIDataTableOptions = {
         filter: true,
-        pagination: true,
         search: true,
         selectableRowsHideCheckboxes: true,
         download: false,
         print: false,
-        
+
+        pagination: true,
+        rowsPerPage: commonState.perPageCount,
+        rowsPerPageOptions: [commonState.perPageCount],
+        serverSide: true,
+        count: commonState.gridCount,
+        onTableChange: (action, tableState) => {
+            if (action === "changePage") {
+                changePage(tableState.page);
+            }
+        }
     }
+
+    const changePage = (page: any) => {
+        let putData = {
+            companyUuid: props.loginCurrentUser.companyUuid,
+            startPageLimit: page * commonState.perPageCount,
+            endPageLimit: (page * commonState.perPageCount) + commonState.perPageCount
+        };
+        props.dispatch(apiActions.methodAction('put', PRODUCTAPI().GETPRODUCT, putData, (result: any) => {
+            setCommonState({ ...commonState, gridRows: result.data || [], gridCount: result.count });
+        }));
+    };
 
     return <div className="p-3">
         <div style={{display: commonState.openForm ? "none" : "block"}}>
