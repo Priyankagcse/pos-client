@@ -26,7 +26,8 @@ export let uomList = [
 
 function Product(props: any) {
     let [state, setState] = useState({uom: 'count', gst: '0'} as any);
-    let [commonState, setCommonState] = useState({openConfirm: false, gridRows: [], editRowData: {}, actionType: '', openForm: false, perPageCount: 5, gridCount: 0} as any);
+    let [commonState, setCommonState] = useState({openConfirm: false, gridRows: [], editRowData: {}, actionType: '',
+        openForm: false, perPageCount: 3, gridCount: 0, gridPagination: -1, allGridRows: [], maxRowLimit: 15} as any);
     const handleChange = (field: any, value: any) => {
         setState((prevState: any) => ({
             ...prevState,
@@ -53,8 +54,8 @@ function Product(props: any) {
             }));
         } else {
             props.dispatch(apiActions.methodAction('post', PRODUCTAPI().POST, productObj, (res: any) => {
-                let updatedGridData = commonState.gridRows.concat([res.data]);
-                stateReset(updatedGridData);
+                commonState.gridRows.unshift(res.data);
+                stateReset(commonState.gridRows, 'post');
             }));
         }
     }
@@ -77,9 +78,20 @@ function Product(props: any) {
         }));
     }
 
-    const stateReset = (updatedGridData?: any) => {
+    const stateReset = (updatedGridData?: any, flag?: string) => {        
         if (updatedGridData) {
-            setCommonState({ ...commonState, openForm: false, editRowData: {}, actionType: '', gridRows: updatedGridData || []});
+            if (flag === 'post') {
+                let pagination = 0;
+                let gridCount = commonState.gridCount + 1;
+                if (gridCount > commonState.maxRowLimit) {
+                    pagination = 1;
+                }
+                let sliceData = updatedGridData.slice(0, commonState.perPageCount);
+                setCommonState({ ...commonState, allGridRows: updatedGridData, gridRows: sliceData || [],
+                    gridCount: gridCount, gridPagination: pagination, openForm: false, editRowData: {}, actionType: '' });
+            } else {
+                setCommonState({ ...commonState, openForm: false, editRowData: {}, actionType: '', gridRows: updatedGridData || []});
+            }
         } else {
             setCommonState({ ...commonState, openConfirm: false, editRowData: {}, actionType: ''});
         }
@@ -177,7 +189,14 @@ function Product(props: any) {
         count: commonState.gridCount,
         onTableChange: (action, tableState) => {
             if (action === "changePage") {
-                changePage(tableState.page);
+                if (commonState.gridPagination) {
+                    changePage(tableState.page);
+                } else {
+                    let startPageLimit = tableState.page * commonState.perPageCount;
+                    let endPageLimit = startPageLimit + commonState.perPageCount;
+                    let sliceData = commonState.allGridRows.slice(startPageLimit, endPageLimit);
+                    setCommonState({ ...commonState, gridRows: sliceData || [] });
+                }
             }
         }
     }
@@ -186,10 +205,18 @@ function Product(props: any) {
         let putData = {
             companyUuid: props.loginCurrentUser.companyUuid,
             startPageLimit: page * commonState.perPageCount,
-            endPageLimit: (page * commonState.perPageCount) + commonState.perPageCount
+            endPageLimit: commonState.perPageCount,
+            maxRowLimit: commonState.maxRowLimit
         };
         props.dispatch(apiActions.methodAction('put', PRODUCTAPI().GETPRODUCT, putData, (result: any) => {
-            setCommonState({ ...commonState, gridRows: result.data || [], gridCount: result.count });
+            let gridRows = result.data;
+            if (result.pagination) {
+                setCommonState({ ...commonState, gridRows: gridRows || [], gridCount: result.count });
+            } else {
+                let sliceData = gridRows.slice(putData.startPageLimit, (putData.startPageLimit + putData.endPageLimit));
+                setCommonState({ ...commonState, allGridRows: gridRows, gridRows: sliceData || [],
+                    gridCount: result.count, gridPagination: result.pagination });
+            }
         }));
     };
 
