@@ -59,13 +59,14 @@ function Product(props: any) {
         }
     }
 
-    const onButtonClick = (event: any, rowData: any, flag: string) => {
+    const onButtonClick = (event: any, uuid: string, flag: string) => {
+        let filterData = commonState.gridRows.find((gridLine: any) => gridLine.uuid === uuid);
         if (flag === 'edit') {
-            setCommonState({ ...commonState, openForm: true, editRowData: rowData, actionType: 'edit'});
-            setState({ partNumber: rowData.partNumber, productName: rowData.productName, uom: rowData.uom, gst: rowData.gst,
-                price: rowData.price, productDescription: rowData.productDescription });
+            setCommonState({ ...commonState, openForm: true, editRowData: filterData, actionType: 'edit'});
+            setState({ partNumber: filterData.partNumber, productName: filterData.productName, uom: filterData.uom, gst: filterData.gst,
+                price: filterData.price, productDescription: filterData.productDescription });
         } else {
-            setCommonState({ ...commonState, openConfirm: true, editRowData: rowData, actionType: 'delete'});
+            setCommonState({ ...commonState, openConfirm: true, editRowData: filterData, actionType: 'delete'});
         }
     }
 
@@ -85,6 +86,15 @@ function Product(props: any) {
     }
 
     const columns: MUIDataTableColumn[] = [
+        {
+            name: 'uuid',
+            label: '',
+            options: {
+                display: false,
+                viewColumns: false,
+                searchable: false
+            }
+        },
         {
             name: 'partNumber',
             label: 'Part Number',
@@ -123,10 +133,10 @@ function Product(props: any) {
                 filter: false, sort: false,
                 customBodyRender: (value: string, tableMeta: any) => {
                     return (<>
-                        <IconButton onClick={(e) => onButtonClick(e, tableMeta.tableData[tableMeta.rowIndex], 'edit')}>
+                        <IconButton color="primary" onClick={(e) => onButtonClick(e, tableMeta.rowData[0], 'edit')}>
                             <EditIcon></EditIcon>
                         </IconButton>
-                        <IconButton onClick={(e) => onButtonClick(e, tableMeta.tableData[tableMeta.rowIndex], 'delete')}>
+                        <IconButton onClick={(e) => onButtonClick(e, tableMeta.rowData[0], 'delete')}>
                             <DeleteIcon></DeleteIcon>
                         </IconButton>
                     </>);
@@ -201,7 +211,7 @@ function Product(props: any) {
         </div>
         <div style={{display: commonState.openForm ? "block" : "none"}}>
             <div className="py-2">
-                <h6>Add New Product</h6>
+                <h6>{commonState.actionType === "edit" ? "Edit Product" : "Add New Product"}</h6>
             </div>
             <form action="" autoComplete="off" className="">
                 <div className="row">

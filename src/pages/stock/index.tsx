@@ -13,6 +13,7 @@ import { addCreatedBy, } from "src/common";
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
+import { alertAction } from "../alert/alert-reducer";
 
 function Stock(props: any) {
     let [state, setState] = useState({productSearchList: [], stockGridData: []} as any);
@@ -46,6 +47,10 @@ function Stock(props: any) {
 
     const productAdd = () => {
         let filterStockData = state.productSearchList.filter((line: any) => +line.stock > 0);
+        if (filterStockData.length === 0) {
+            props.dispatch(alertAction.error('Please fill stock'));
+            return;
+        }
         let insertData = {
             stockList: filterStockData,
             userUuid: props.loginCurrentUser.uuid
