@@ -27,7 +27,7 @@ export let uomList = [
 function Product(props: any) {
     let [state, setState] = useState({uom: 'count', gst: '0'} as any);
     let [commonState, setCommonState] = useState({openConfirm: false, gridRows: [], editRowData: {}, actionType: '',
-        openForm: false, perPageCount: 3, gridCount: 0, gridPagination: -1, allGridRows: [], maxRowLimit: 15} as any);
+        openForm: false, perPageCount: 3, gridCount: 0, gridPagination: -1, allGridRows: [], maxRowLimit: 5, currentPage: 0} as any);
     const handleChange = (field: any, value: any) => {
         setState((prevState: any) => ({
             ...prevState,
@@ -44,18 +44,18 @@ function Product(props: any) {
         if (commonState.actionType === 'edit') {
             productObj['uuid'] = commonState.editRowData.uuid;
             props.dispatch(apiActions.methodAction('put', PRODUCTAPI().PUT, productObj, (res: any) => {
-                let updatedGridData = commonState.gridRows.map((gridLine: any, ind: number) => {
+                let updatedGridData = commonState.allGridRows.map((gridLine: any, ind: number) => {
                     if (gridLine.uuid === commonState.editRowData.uuid) {
                         return res.data;
                     }
                     return gridLine;
                 });
-                stateReset(updatedGridData);
+                stateReset(updatedGridData, 'edit');
             }));
         } else {
             props.dispatch(apiActions.methodAction('post', PRODUCTAPI().POST, productObj, (res: any) => {
-                commonState.gridRows.unshift(res.data);
-                stateReset(commonState.gridRows, 'post');
+                commonState.allGridRows.unshift(res.data);
+                stateReset(commonState.allGridRows, 'add');
             }));
         }
     }
@@ -73,14 +73,21 @@ function Product(props: any) {
 
     const prodDelete = () => {
         props.dispatch(apiActions.methodAction('delete', PRODUCTAPI().DELETE, {uuid: commonState.editRowData.uuid}, (result: any) => {
-            let filterData = commonState.gridRows.filter((gridLine: any) => gridLine.uuid !== commonState.editRowData.uuid);
-            setCommonState({ ...commonState, openConfirm: false, editRowData: {}, actionType: '', gridRows: filterData || []});
+            let filterData = commonState.allGridRows.filter((gridLine: any) => gridLine.uuid !== commonState.editRowData.uuid);
+            let sliceData = filterData.slice(commonState.currentPage, commonState.perPageCount);
+            let pagination = 0;
+            let gridCount = commonState.gridCount - 1;
+            if (gridCount > commonState.maxRowLimit) {
+                pagination = 1;
+            }
+            setCommonState({ ...commonState, openConfirm: false, editRowData: {}, actionType: '',
+                allGridRows: filterData, gridRows: sliceData || [], gridCount: gridCount, gridPagination: pagination});
         }));
     }
 
     const stateReset = (updatedGridData?: any, flag?: string) => {        
         if (updatedGridData) {
-            if (flag === 'post') {
+            if (flag === 'add') {
                 let pagination = 0;
                 let gridCount = commonState.gridCount + 1;
                 if (gridCount > commonState.maxRowLimit) {
@@ -90,7 +97,8 @@ function Product(props: any) {
                 setCommonState({ ...commonState, allGridRows: updatedGridData, gridRows: sliceData || [],
                     gridCount: gridCount, gridPagination: pagination, openForm: false, editRowData: {}, actionType: '' });
             } else {
-                setCommonState({ ...commonState, openForm: false, editRowData: {}, actionType: '', gridRows: updatedGridData || []});
+                let sliceData = updatedGridData.slice(commonState.currentPage, commonState.perPageCount);
+                setCommonState({ ...commonState, allGridRows: updatedGridData, gridRows: sliceData || [], openForm: false, editRowData: {}, actionType: '' });
             }
         } else {
             setCommonState({ ...commonState, openConfirm: false, editRowData: {}, actionType: ''});
@@ -195,7 +203,7 @@ function Product(props: any) {
                     let startPageLimit = tableState.page * commonState.perPageCount;
                     let endPageLimit = startPageLimit + commonState.perPageCount;
                     let sliceData = commonState.allGridRows.slice(startPageLimit, endPageLimit);
-                    setCommonState({ ...commonState, gridRows: sliceData || [] });
+                    setCommonState({ ...commonState, gridRows: sliceData || [], currentPage: tableState.page});
                 }
             }
         }
@@ -210,13 +218,11 @@ function Product(props: any) {
         };
         props.dispatch(apiActions.methodAction('put', PRODUCTAPI().GETPRODUCT, putData, (result: any) => {
             let gridRows = result.data;
-            if (result.pagination) {
-                setCommonState({ ...commonState, gridRows: gridRows || [], gridCount: result.count });
-            } else {
-                let sliceData = gridRows.slice(putData.startPageLimit, (putData.startPageLimit + putData.endPageLimit));
-                setCommonState({ ...commonState, allGridRows: gridRows, gridRows: sliceData || [],
-                    gridCount: result.count, gridPagination: result.pagination });
+            if (result.pagination === 0) {
+                gridRows = gridRows.slice(putData.startPageLimit, (putData.startPageLimit + putData.endPageLimit));   
             }
+            setCommonState({ ...commonState, allGridRows: result.data, gridRows: gridRows || [],
+                gridCount: result.count, gridPagination: result.pagination, currentPage: page });
         }));
     };
 
