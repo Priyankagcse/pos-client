@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Router, Switch } from "react-router-dom";
+import { Redirect, Route, Router, Switch } from "react-router-dom";
 import { history } from "../../helper/history";
 import { HomePageView } from "../homepage-view";
 import { LoginPage } from "./login-view";
@@ -42,8 +42,8 @@ function SigninPage(props: any) {
             {props.loggingIn ?
                 <React.Fragment>
                     <Switch>
-                        <Route path="/home/:anyLink" component={HomePageView} />
                         <Route path="/home" component={HomePageView} />
+                        <Redirect path="*" to={"/home"}/>
                     </Switch>
                 </React.Fragment> :
                 <React.Fragment>

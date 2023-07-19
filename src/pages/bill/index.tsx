@@ -1,4 +1,4 @@
-import { Autocomplete, Button, IconButton, ListItem, TextField } from "@mui/material";
+import { Autocomplete, Button, IconButton, ListItem, TableCell, TableFooter, TableRow, TextField } from "@mui/material";
 import React, {useState } from "react";
 import { TextFieldView } from "src/component/textfield-view";
 import { Columns } from "./config/config";
@@ -15,9 +15,11 @@ import { alertAction } from "../alert/alert-reducer";
 import { connect } from "react-redux";
 import { IState } from "src/initialload/state-interface";
 import { Dispatch } from "redux";
+import AddIcon from '@mui/icons-material/Add';
+import dayjs from 'dayjs';
 
 function Bill (props: any) {
-    let [state, setState] = useState({productSearchList: []} as any);
+    let [state, setState] = useState({productSearchList: [], date: dayjs(new Date())} as any);
     let [addProduct, setAddProduct] = useState(false);
     const handleChange = (field: any, value: any) => {
         setState((prevState: any) => ({
@@ -67,23 +69,42 @@ function Bill (props: any) {
         selectableRowsHideCheckboxes: true,
         download: false,
         print: false,
-        viewColumns: false
+        viewColumns: false,
+        customTableBodyFooterRender: function(opts) {
+            console.log(opts);
+            return (
+                <TableFooter className={"footerClasses"} >
+                  <TableRow>
+                    {/* {opts.columns.map((col, index) => {
+                        if (col.name === 'price') {
+                          return (
+                            <TableCell key={index} size="small">
+                              100
+                            </TableCell>
+                          )
+                        }
+                        return <TableCell key={index} className={"footerClasses"} />;
+                    }
+                    )} */}
+                    <TableCell colSpan={6} className={"footerClasses"} align="right">100</TableCell>
+                    </TableRow>
+                </TableFooter>
+            );
+        }
     }
 
     return <div>
-        <div className="py-2">
-            <h6>New Bill</h6>
-        </div>
-        <div className="row p-2">
-            <div className={"col-12 bg-light p-2 row " + (addProduct ? "col-sm-9" : "col-sm-12")}>
+        <h6 className="py-2">New Bill</h6>
+        <div className="row m-0 py-2">
+            <div className={"col-12 bg-light p-2 row m-0 " + (addProduct ? "col-sm-9" : "col-sm-12")}>
                 <div className="col-6 pb-4">
-                    <Autocomplete className="col-12" options={[]} value={state.customer} freeSolo onChange={handleChange}
+                    <Autocomplete className="col-12" options={["Srinivasan"]} value={state.customer} freeSolo onChange={handleChange}
                         renderInput={(params) => <TextField {...params} variant="standard" label={"Customer"}></TextField>}
                     />
                 </div>
                 <div className="col-6 pb-4">
-                    <TextFieldView className={"col-12"} label={"Phone Number"} value={state.phoneNumber} onChange={handleChange}
-                        />
+                    <TextFieldView label="Phone Number" type={'number'} field={'phoneNumber'} className={'col-12 col-sm-12'}
+                        onChange={handleChange} value={state.phoneNumber} inputProps={{maxLength: 10}} placeholder={'9874563210'} />
                 </div>
                 <div className="col-12 pb-4">
                     <TextFieldView label={"Address"} className={"col-12"} value={state.address} onChange={handleChange}
@@ -97,17 +118,22 @@ function Bill (props: any) {
                             value={state.date}
                             onChange={(newValue: Date) => handleChange("date", newValue)}
                             slotProps={{ textField: { variant: 'standard', } }}
+
                         />
                     </LocalizationProvider>
                 </div>
                 <div className="col-12">
+                    <div className="d-flex py-2">
+                        <h6 className="col px-0 py-1"></h6>
+                        {!addProduct && <Button variant="contained" color="primary" onClick={() => setAddProduct(true)}><AddIcon/>Add Product</Button>}
+                    </div>
                     <MUIDataTable
                         title={""}
-                        data={[]}
+                        data={[{price: 100}]}
                         columns={Columns}
                         options={options}
                     />
-                    <Button onClick={() => setAddProduct(true)}>Add Product</Button>
+                    
                 </div>
             </div>
             {addProduct && <div className="col-12 col-sm-3">
@@ -118,7 +144,7 @@ function Bill (props: any) {
                         <IconButton onClick={() => setAddProduct(false)}><CloseIcon/></IconButton>
                     </div>
                 </div>
-                <div className="col-12 p-0">
+                <div className="">
                     <TextFieldView label="Search" type={'text'} field={'productName'} className={'col-12'} required
                         onChange={handleChange} value={state.productName} onKeyDown={(event: any) => {
                             if (event.keyCode === 13) {
@@ -126,19 +152,21 @@ function Bill (props: any) {
                             }
                         }} />
                 </div>
-                {state.productSearchList.map((line: any, ind: number) => {
-                    return <ListItem className="border-bottom px-0" key={ind}>
-                            <div className="col p-0 lh-16">
-                                <div className="text-secondary">{line.partNumber}</div>
-                                <div>{line.productName}</div>
-                                <div className="text-secondary fs-12">{line.productDescription}</div>
-                            </div>
-                            <div className="col-3 p-0">
-                                <TextFieldView label="Stock" type={'number'} field={'stock'} className={'col-12'} required
-                                    onChange={(field: any, value: any) => stockUpdate(line, value)} value={state.stock} />
-                            </div>
-                    </ListItem>
-                })}
+                <div className="">
+                    {state.productSearchList.map((line: any, ind: number) => {
+                        return <ListItem className="border-bottom px-0" key={ind}>
+                                <div className="col p-0 lh-16">
+                                    <div className="text-secondary">{line.partNumber}</div>
+                                    <div>{line.productName}</div>
+                                    <div className="text-secondary fs-12">{line.productDescription}</div>
+                                </div>
+                                <div className="col-3 p-0">
+                                    <TextFieldView label="Quantity" type={'number'} field={'quantity'} className={'col-12'} required
+                                        onChange={(field: any, value: any) => stockUpdate(line, value)} value={state.stock} />
+                                </div>
+                        </ListItem>
+                    })}
+                </div>
             </div>}
         </div>
     </div>;

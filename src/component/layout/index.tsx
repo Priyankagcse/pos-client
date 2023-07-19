@@ -7,7 +7,7 @@ import { history } from "../../helper/history";
 import { getMenuIcon } from "./config/config";
 import { loginAction } from "src/pages/login/login-reducer";
 
-function Layout({children, menus, props}: any) {
+function Layout({menus, props}: any) {
     let [show, setShow] = useState(false);
     let [selectedMenu, setMenu] = useState({} as any);
     const menuClick = (menu: any) => {

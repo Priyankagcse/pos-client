@@ -1,15 +1,8 @@
+import { MUIDataTableColumn } from "mui-datatables";
 import { uomList } from "src/pages/product";
 
-export const Columns: any[] = [
-	{
-		name: 'uuid',
-		label: '',
-		options: {
-			display: false,
-			viewColumns: false,
-			searchable: false
-		}
-	},
+export const Columns: MUIDataTableColumn[] = [
+	
 	{
 		name: 'partNumber',
 		label: 'Part Number',
@@ -17,6 +10,10 @@ export const Columns: any[] = [
 	{
 		name: 'productName',
 		label: 'Product Name',
+	},
+	{
+		name: 'productDescription',
+		label: 'Product Description',
 	},
 	{
 		name: 'uom',
@@ -38,9 +35,11 @@ export const Columns: any[] = [
 	{
 		name: 'price',
 		label: 'Price',
+		options: {
+			sort: false,
+      		setCellHeaderProps: () => { return { align: "right" } },
+			setCellProps: () => ({ style: { textAlign: 'end'  }}),
+		}
 	},
-	{
-		name: 'productDescription',
-		label: 'Product Description',
-	},
+	
 ];

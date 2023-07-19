@@ -7,7 +7,6 @@ import { history } from "src/helper/history";
 import { loginAction } from "./login/login-reducer";
 import Layout from "src/component/layout";
 import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
-import Product from "src/pages/product";
 
 function HomePage(props: any) {
 
@@ -33,9 +32,7 @@ function HomePage(props: any) {
     }, []);
 
     return (<>
-        <Layout menus={props.menus} props={props}>
-            <Product></Product>
-        </Layout>
+        <Layout menus={props.menus} props={props}></Layout>
         <Dialog open={props.isConfirm} onClose={() => props.dispatch(loginAction.homeToLogin(false))}
             aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
             <DialogTitle>{"Do you want to logout?"}</DialogTitle>
