@@ -73,15 +73,7 @@ function Product(props: any) {
 
     const prodDelete = () => {
         props.dispatch(apiActions.methodAction('delete', PRODUCTAPI().DELETE, {uuid: commonState.editRowData.uuid}, (result: any) => {
-            let filterData = commonState.allGridRows.filter((gridLine: any) => gridLine.uuid !== commonState.editRowData.uuid);
-            let sliceData = filterData.slice(commonState.currentPage, commonState.perPageCount);
-            let pagination = 0;
-            let gridCount = commonState.gridCount - 1;
-            if (gridCount > commonState.maxRowLimit) {
-                pagination = 1;
-            }
-            setCommonState({ ...commonState, openConfirm: false, editRowData: {}, actionType: '',
-                allGridRows: filterData, gridRows: sliceData || [], gridCount: gridCount, gridPagination: pagination});
+            changePage(commonState.currentPage, {openConfirm: false, editRowData: {}, actionType: ''});
         }));
     }
 
@@ -94,10 +86,12 @@ function Product(props: any) {
                     pagination = 1;
                 }
                 let sliceData = updatedGridData.slice(0, commonState.perPageCount);
-                setCommonState({ ...commonState, allGridRows: updatedGridData, gridRows: sliceData || [],
+                setCommonState({ ...commonState, allGridRows: updatedGridData, gridRows: sliceData || [], currentPage: 0,
                     gridCount: gridCount, gridPagination: pagination, openForm: false, editRowData: {}, actionType: '' });
             } else {
-                let sliceData = updatedGridData.slice(commonState.currentPage, commonState.perPageCount);
+                let startPageLimit = commonState.currentPage * commonState.perPageCount;
+                let endPageLimit = startPageLimit + commonState.perPageCount;
+                let sliceData = updatedGridData.slice(startPageLimit, endPageLimit);
                 setCommonState({ ...commonState, allGridRows: updatedGridData, gridRows: sliceData || [], openForm: false, editRowData: {}, actionType: '' });
             }
         } else {
@@ -188,8 +182,8 @@ function Product(props: any) {
         search: true,
         selectableRowsHideCheckboxes: true,
         download: false,
-        print: false,
-
+        print: false,        
+        page: commonState.currentPage,
         pagination: true,
         rowsPerPage: commonState.perPageCount,
         rowsPerPageOptions: [commonState.perPageCount],
@@ -209,7 +203,7 @@ function Product(props: any) {
         }
     }
 
-    const changePage = (page: any) => {
+    const changePage = (page: any, concatObj?: any) => {
         let putData = {
             companyUuid: props.loginCurrentUser.companyUuid,
             startPageLimit: page * commonState.perPageCount,
@@ -222,7 +216,9 @@ function Product(props: any) {
                 gridRows = gridRows.slice(putData.startPageLimit, (putData.startPageLimit + putData.endPageLimit));   
             }
             setCommonState({ ...commonState, allGridRows: result.data, gridRows: gridRows || [],
-                gridCount: result.count, gridPagination: result.pagination, currentPage: page });
+                gridCount: result.count, gridPagination: result.pagination, currentPage: page,
+                ...concatObj
+            });
         }));
     };
 
