@@ -11,6 +11,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MUIDataTable, { MUIDataTableColumn, MUIDataTableOptions } from "mui-datatables";
 import AddIcon from '@mui/icons-material/Add';
+import { isNullOrUndefinedOrEmpty } from "src/common";
 
 let taxData = [
     { text: '0%', value: '0' },
@@ -27,7 +28,8 @@ export let uomList = [
 function Product(props: any) {
     let [state, setState] = useState({uom: 'count', gst: '0'} as any);
     let [commonState, setCommonState] = useState({openConfirm: false, gridRows: [], editRowData: {}, actionType: '',
-        openForm: false, perPageCount: 3, gridCount: 0, gridPagination: -1, allGridRows: [], maxRowLimit: 5, currentPage: 0} as any);
+        openForm: false, perPageCount: 3, gridCount: 0, gridPagination: -1, allGridRows: [], maxRowLimit: 5, currentPage: 0,
+        caller: '', searchText: '', sortColumn: '', sortDirection: ''} as any);
     const handleChange = (field: any, value: any) => {
         setState((prevState: any) => ({
             ...prevState,
@@ -111,7 +113,7 @@ function Product(props: any) {
         },
         {
             name: 'partNumber',
-            label: 'Part Number',
+            label: 'Part Number'
         },
         {
             name: 'productName',
@@ -200,15 +202,34 @@ function Product(props: any) {
                     setCommonState({ ...commonState, gridRows: sliceData || [], currentPage: tableState.page});
                 }
             }
+        },
+        onSearchChange: (searchText) => {
+            if (searchText) {
+                changePage(0, {}, {caller: 'prodSearch', searchText: searchText});
+            } else {
+                changePage(0, {}, {caller: '', searchText: ''});
+            }
+        },
+        onColumnSortChange: (changedColumn, direction) => {
+            changePage(0, {}, {caller: 'sort', sortColumn: changedColumn, sortDirection: direction});
         }
     }
 
-    const changePage = (page: any, concatObj?: any) => {
+    const changePage = (page: any, concatObj?: any, callerObj?: object) => {
+        let filterObj = callerObj;
+        if (isNullOrUndefinedOrEmpty(filterObj)) {
+            if (commonState.caller === 'prodSearch') {
+                filterObj = { caller: commonState.caller, searchText: commonState.searchText };
+            } else if (commonState.caller === 'sort') {
+                filterObj = { caller: commonState.caller, sortColumn: commonState.changedColumn, sortDirection: commonState.direction };
+            }
+        }
         let putData = {
             companyUuid: props.loginCurrentUser.companyUuid,
             startPageLimit: page * commonState.perPageCount,
             endPageLimit: commonState.perPageCount,
-            maxRowLimit: commonState.maxRowLimit
+            maxRowLimit: commonState.maxRowLimit,
+            ...filterObj
         };
         props.dispatch(apiActions.methodAction('put', PRODUCTAPI().GETPRODUCT, putData, (result: any) => {
             let gridRows = result.data;
@@ -217,7 +238,7 @@ function Product(props: any) {
             }
             setCommonState({ ...commonState, allGridRows: result.data, gridRows: gridRows || [],
                 gridCount: result.count, gridPagination: result.pagination, currentPage: page,
-                ...concatObj
+                ...concatObj, ...filterObj
             });
         }));
     };
