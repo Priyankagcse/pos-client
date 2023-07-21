@@ -28,18 +28,16 @@ function LoginPageView(props: any) {
         if (alreadyPresent.length === 0) {
             props.dispatch(alertAction.error('Username and Password Mismatch'));
         } else {
-            apiActions.loginAction((info: any) => {
-                props.dispatch(apiActions.methodAction('get', USERAPI(alreadyPresent[0]['uuid'], alreadyPresent[0]['companyUuid']).GETBYID, {}, (res: any) => {
-                    sessionStorage.setItem('accessToken', '111222333');
-                    sessionStorage.setItem('userUuid', alreadyPresent[0]['uuid']);
-                    props.dispatch(loginAction.loginCurrentUser(res.data));
-                    props.dispatch(loginAction.loginRequest());
-                    history.push('\home');
-                }));
+            props.dispatch(apiActions.methodAction('get', USERAPI(alreadyPresent[0]['uuid'], alreadyPresent[0]['companyUuid']).GETBYID, {}, (res: any) => {
+                sessionStorage.setItem('accessToken', '111222333');
+                sessionStorage.setItem('userUuid', alreadyPresent[0]['uuid']);
+                props.dispatch(loginAction.loginCurrentUser(res.data));
+                props.dispatch(loginAction.loginRequest());
+                history.push('\home');
             }, () => {
                 sessionStorage.setItem('accessToken', '111222333');
                 sessionStorage.setItem('userUuid', alreadyPresent[0]['uuid']);
-            });
+            }));
         }
     };
     

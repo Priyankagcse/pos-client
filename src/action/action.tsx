@@ -4,17 +4,8 @@ import { alertAction } from "src/pages/alert/alert-reducer";
 import { progressAction } from "src/pages/progress/progress-reducer";
 
 export const apiActions = {
-    loginAction: loginAction,
     methodAction: methodAction
 };
-
-function loginAction(succ?: any, fail?: any) {
-    Axios.get(`https://api.ipify.org/?format=json/get`).then((result) => {
-        succ && succ(result);
-    }, (error) => {
-        fail && fail(error);
-    });
-}
 
 function methodAction(method: string, url: any, obj: any, succ?: any, fail?: any) {
     return (dispatch: any, getState: any) => {
