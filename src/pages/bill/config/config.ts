@@ -16,6 +16,10 @@ export const Columns: MUIDataTableColumn[] = [
 		label: 'Product Description',
 	},
 	{
+		name: 'qty',
+		label: 'Qty',
+	},
+	{
 		name: 'uom',
 		label: 'UOM',
 		options: {         
@@ -33,8 +37,8 @@ export const Columns: MUIDataTableColumn[] = [
 		}
 	},
 	{
-		name: 'price',
-		label: 'Price',
+		name: 'amount',
+		label: 'Amount',
 		options: {
 			sort: false,
       		setCellHeaderProps: () => { return { align: "right" } },

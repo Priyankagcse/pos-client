@@ -9,7 +9,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
 import { apiActions } from "src/action/action";
-import { PRODUCTAPI, STOCKAPI } from "src/apiurl";
+import { BILLAPI, PRODUCTAPI } from "src/apiurl";
 import { addCreatedBy } from "src/common";
 import { alertAction } from "../alert/alert-reducer";
 import { connect } from "react-redux";
@@ -19,7 +19,7 @@ import AddIcon from '@mui/icons-material/Add';
 import dayjs from 'dayjs';
 
 function Bill (props: any) {
-    let [state, setState] = useState({productSearchList: [], date: dayjs(new Date())} as any);
+    let [state, setState] = useState({productSearchList: [], date: dayjs(new Date()), productLists: []} as any);
     let [addProduct, setAddProduct] = useState(false);
     const handleChange = (field: any, value: any) => {
         setState((prevState: any) => ({
@@ -29,7 +29,7 @@ function Bill (props: any) {
     };
 
     const productSearch = () => {
-        props.dispatch(apiActions.methodAction('get', PRODUCTAPI(props.loginCurrentUser.companyUuid, state.productName).PRODUCTSEARCH, {}, (res: any) => {
+        props.dispatch(apiActions.methodAction('get', PRODUCTAPI(props.loginCurrentUser.companyUuid, state.productName).PRODUCTSEARCHWITHSTOCK, {}, (res: any) => {
             handleChange('productSearchList', res.data);
         }));
     }
@@ -39,17 +39,11 @@ function Bill (props: any) {
         if (filterStockData.length === 0) {
             props.dispatch(alertAction.error('Please fill stock'));
             return;
-        }
-        let insertData = {
-            stockList: filterStockData,
-            userUuid: props.loginCurrentUser.uuid
-        };
-        addCreatedBy(insertData);
-        props.dispatch(apiActions.methodAction('put', STOCKAPI().STOCKBULKINSERT, insertData, (res: any) => {
-            let concatData = (state.stockGridData).concat(filterStockData);
-            handleChange('stockGridData', concatData);
+        } else {
+            let concatData = (state.productLists).concat(filterStockData);
+            handleChange('productLists', concatData);
             setAddProduct(false);
-        }));        
+        }   
     }
 
     const stockUpdate = (prodLine: any, value: any) => {
@@ -93,13 +87,32 @@ function Bill (props: any) {
         }
     }
 
+    const billSave = () => {
+        let putData: any = {
+            companyUuid: props.loginCurrentUser.companyUuid,
+            userUuid: props.loginCurrentUser.uuid,
+            customerName: state.customerName,
+            phoneNumber: state.phoneNumber,
+            address: state.address,
+            billDate: state.billDate,
+            lines: state.productLists
+        };
+        addCreatedBy(putData);
+        props.dispatch(apiActions.methodAction('put', BILLAPI().SAVE, putData, (res: any) => {
+            //
+        }));
+    }
+
     return <div>
-        <h6 className="py-2">New Bill</h6>
+        <div className="d-flex py-2">
+            <h6 className="py-2 col">New Bill</h6>
+            <Button variant="contained" color="primary" onClick={() => billSave()}><AddIcon/>Save</Button>
+        </div>
         <div className="row m-0 py-2">
             <div className={"col-12 bg-light p-2 row m-0 " + (addProduct ? "col-sm-9" : "col-sm-12")}>
                 <div className="col-6 pb-4">
-                    <Autocomplete className="col-12" options={["Srinivasan"]} value={state.customer} freeSolo onChange={handleChange}
-                        renderInput={(params) => <TextField {...params} variant="standard" label={"Customer"}></TextField>}
+                    <Autocomplete className="col-12" options={["Srinivasan"]} value={state.customerName} freeSolo onChange={handleChange}
+                        renderInput={(params) => <TextField {...params} variant="standard" label={"customerName"}></TextField>}
                     />
                 </div>
                 <div className="col-6 pb-4">
@@ -129,7 +142,7 @@ function Bill (props: any) {
                     </div>
                     <MUIDataTable
                         title={""}
-                        data={[{price: 100}]}
+                        data={state.productLists}
                         columns={Columns}
                         options={options}
                     />
@@ -158,6 +171,7 @@ function Bill (props: any) {
                                 <div className="col p-0 lh-16">
                                     <div className="text-secondary">{line.partNumber}</div>
                                     <div>{line.productName}</div>
+                                    <div>Stock: {line.stock}</div>
                                     <div className="text-secondary fs-12">{line.productDescription}</div>
                                 </div>
                                 <div className="col-3 p-0">

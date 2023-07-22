@@ -21,7 +21,8 @@ export const PRODUCTAPI = (firstParam?: any, secondParam?: any) => {
         GET: API_URL + `product/${firstParam}`,
         DELETE: API_URL + 'product',
         PRODUCTSEARCH: API_URL + `productSearch/${firstParam}/${secondParam}`,
-        GETPRODUCT: API_URL + 'getProduct'
+        GETPRODUCT: API_URL + 'getProduct',
+        PRODUCTSEARCHWITHSTOCK: API_URL + `productSearchWithStock/${firstParam}/${secondParam}`
     };
 };
 
@@ -32,5 +33,11 @@ export const STOCKAPI = (firstParam?: any) => {
         GET: API_URL + `stock/${firstParam}`,
         DELETE: API_URL + 'stock',
         STOCKBULKINSERT: API_URL + 'stockBulkInsert',
+    };
+};
+
+export const BILLAPI = () => {
+    return {
+        SAVE: API_URL + 'bill'
     };
 };
