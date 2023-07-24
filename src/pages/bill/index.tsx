@@ -19,7 +19,7 @@ import AddIcon from '@mui/icons-material/Add';
 import dayjs from 'dayjs';
 
 function Bill (props: any) {
-    let [state, setState] = useState({productSearchList: [], date: dayjs(new Date()), productLists: []} as any);
+    let [state, setState] = useState({productSearchList: [], billDate: dayjs(new Date()), productLists: []} as any);
     let [addProduct, setAddProduct] = useState(false);
     const handleChange = (field: any, value: any) => {
         setState((prevState: any) => ({
@@ -35,9 +35,9 @@ function Bill (props: any) {
     }
 
     const productAdd = () => {
-        let filterStockData = state.productSearchList.filter((line: any) => +line.stock > 0);
+        let filterStockData = state.productSearchList.filter((line: any) => +line.qty > 0);
         if (filterStockData.length === 0) {
-            props.dispatch(alertAction.error('Please fill stock'));
+            props.dispatch(alertAction.error('Please Enter Quantity'));
             return;
         } else {
             let concatData = (state.productLists).concat(filterStockData);
@@ -49,7 +49,7 @@ function Bill (props: any) {
     const stockUpdate = (prodLine: any, value: any) => {
         let productSearchList = state.productSearchList.map((line: any, ind: number) => {
             if (prodLine.uuid === line.uuid) {
-                line['stock'] = value;
+                line['qty'] = value;
             }
             return line;
         });
@@ -65,7 +65,6 @@ function Bill (props: any) {
         print: false,
         viewColumns: false,
         customTableBodyFooterRender: function(opts) {
-            console.log(opts);
             return (
                 <TableFooter className={"footerClasses"} >
                   <TableRow>
@@ -80,7 +79,7 @@ function Bill (props: any) {
                         return <TableCell key={index} className={"footerClasses"} />;
                     }
                     )} */}
-                    <TableCell colSpan={6} className={"footerClasses"} align="right">100</TableCell>
+                    <TableCell colSpan={7} className={"footerClasses"} align="right">100</TableCell>
                     </TableRow>
                 </TableFooter>
             );
@@ -94,7 +93,7 @@ function Bill (props: any) {
             customerName: state.customerName,
             phoneNumber: state.phoneNumber,
             address: state.address,
-            billDate: state.billDate,
+            billDate: '2023-07-20T06:39:34.000Z',
             lines: state.productLists
         };
         addCreatedBy(putData);
@@ -121,15 +120,15 @@ function Bill (props: any) {
                 </div>
                 <div className="col-12 pb-4">
                     <TextFieldView label={"Address"} className={"col-12"} value={state.address} onChange={handleChange}
-                        multiline
+                        multiline field={'address'}
                     />
                 </div>
                 <div className="col-6 pb-4">
                     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
                         <DatePicker
                             label="Date"
-                            value={state.date}
-                            onChange={(newValue: Date) => handleChange("date", newValue)}
+                            value={state.billDate}
+                            onChange={(newValue: Date) => handleChange("billDate", newValue)}
                             slotProps={{ textField: { variant: 'standard', } }}
 
                         />
@@ -175,8 +174,15 @@ function Bill (props: any) {
                                     <div className="text-secondary fs-12">{line.productDescription}</div>
                                 </div>
                                 <div className="col-3 p-0">
-                                    <TextFieldView label="Quantity" type={'number'} field={'quantity'} className={'col-12'} required
-                                        onChange={(field: any, value: any) => stockUpdate(line, value)} value={state.stock} />
+                                    <TextFieldView label="Quantity" type={'number'} field={'qty'} className={'col-12'} required
+                                        onChange={(field: any, value: any) => {
+                                            if (+line.stock < +value) {
+                                                props.dispatch(alertAction.error('Quantity is greater than stock'));
+                                                stockUpdate(line, line.stock);
+                                            } else {
+                                                stockUpdate(line, value);
+                                            }
+                                        }} value={line.qty} />
                                 </div>
                         </ListItem>
                     })}

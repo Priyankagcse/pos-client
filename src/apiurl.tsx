@@ -38,6 +38,6 @@ export const STOCKAPI = (firstParam?: any) => {
 
 export const BILLAPI = () => {
     return {
-        SAVE: API_URL + 'bill'
+        SAVE: API_URL + 'billSave'
     };
 };
