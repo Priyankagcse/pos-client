@@ -1,4 +1,4 @@
-import { Autocomplete, Button, IconButton, ListItem, TableCell, TableFooter, TableRow, TextField } from "@mui/material";
+import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, IconButton, ListItem, TableCell, TableFooter, TableRow, TextField } from "@mui/material";
 import React, {useState } from "react";
 import { TextFieldView } from "src/component/textfield-view";
 import { Columns } from "./config/config";
@@ -98,8 +98,12 @@ function Bill (props: any) {
         };
         addCreatedBy(putData);
         props.dispatch(apiActions.methodAction('put', BILLAPI().SAVE, putData, (res: any) => {
-            //
+            setState({ ...state, ...{isConfirm: true, billNo: res.data.billNumber}});
         }));
+    }
+
+    const billClose = () => {
+        setState({ ...state, isConfirm: false, customerName: '', phoneNumber: '', address: '', billDate: dayjs(new Date()), productLists: [] });
     }
 
     return <div>
@@ -137,7 +141,10 @@ function Bill (props: any) {
                 <div className="col-12">
                     <div className="d-flex py-2">
                         <h6 className="col px-0 py-1"></h6>
-                        {!addProduct && <Button variant="contained" color="primary" onClick={() => setAddProduct(true)}><AddIcon/>Add Product</Button>}
+                        {!addProduct && <Button variant="contained" color="primary" onClick={() => {
+                            setAddProduct(true);
+                            setState({...state, productSearchList: [], productName: ''})
+                        }}><AddIcon/>Add Product</Button>}
                     </div>
                     <MUIDataTable
                         title={""}
@@ -189,6 +196,13 @@ function Bill (props: any) {
                 </div>
             </div>}
         </div>
+        <Dialog open={state.isConfirm} onClose={() => billClose()}>
+            <DialogTitle>{state.billNo + " Bill Generated Successfully"}</DialogTitle>
+            <DialogActions className="pb-3">
+                <Button variant="contained" color="primary" onClick={() => billClose()}>Ok</Button>
+                <Button onClick={() => billClose()} autoFocus>Cancel</Button>
+            </DialogActions>
+        </Dialog>
     </div>;
 }
 
