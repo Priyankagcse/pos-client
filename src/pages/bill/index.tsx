@@ -22,6 +22,7 @@ import { AmountCalc } from "./config/config";
 import { uomList } from "../product";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import BackIcon from '@mui/icons-material/ArrowBackIosNew';
 
 function Bill (props: any) {
     let [state, setState] = useState({productSearchList: [], billDate: dayjs(new Date()), productLists: []} as any);
@@ -300,8 +301,8 @@ function Bill (props: any) {
                 </div>
             </div>
             {sidebar === "search" && <div className="col-12 col-sm-3">
-                <div className="row m-0 pb-3">
-                    <div className="col px-0 py-2">Search Product</div>
+                <div className="row mx-0 mb-3 bg-light">
+                    <div className="col py-2">Search Product</div>
                     <div className="col-4 px-0">
                         <IconButton onClick={() => productAdd()}><SaveIcon/></IconButton>
                         <IconButton onClick={() => setSidebar("")}><CloseIcon/></IconButton>
@@ -350,14 +351,27 @@ function Bill (props: any) {
                 </div>
             </div>}
             {sidebar === "edit" && <div className="col-12 col-sm-3">
-                <div className="row m-0 pb-3">
-                    <div className="col px-0 py-2">Product Details</div>
-                    <div className="col-4 px-0">
+                <div className="row mx-0 mb-3 bg-light">
+                    <div className="col px-0 py-2">
+                        <IconButton onClick={() => setSidebar("")}><BackIcon/></IconButton>
+                        Product Details
+                    </div>
+                    <div className="col-2 px-0 py-2">
                         <IconButton onClick={() => productAdd(true)}><SaveIcon/></IconButton>
-                        <IconButton onClick={() => setSidebar("")}><CloseIcon/></IconButton>
                     </div>
                 </div>
                 <div>
+                    <div className="col-12 p-0 row m-0">
+                        <div className="col-9 p-0 lh-16">
+                            <div className="text-secondary">{selectedProduct.partNumber}</div>
+                            <div>{selectedProduct.productName}</div>
+                            <div className="text-secondary fs-12">{selectedProduct.productDescription}</div>
+                        </div>
+                        <div className={"col-3 pr-0 d-flex"}>
+                            <div className={"h3"}>{selectedProduct.stock}</div>
+                            <div className={""}>{selectedProduct.uom}</div>
+                        </div>
+                    </div>
                     <div className="col-12 pb-4 d-flex">
                         <div className="col-4 px-0">
                             <DropDownView type={'text'} field={'discountType'} className={'col-12 '}

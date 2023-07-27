@@ -31,10 +31,7 @@ function ForgotPassword(props: any) {
             let putData = {...state.selecteData, password: encryptedData(state.password)};
             props.dispatch(apiActions.methodAction('put', USERAPI().PUT, putData, (res: any) => {
                 let userLists = props.userLists.map((line: any) => {
-                    if (line.uuid === putData.uuid) {
-                        line['password'] = putData.password;
-                    }
-                    return line;
+                    return (line.uuid === putData.uuid) ? {...line, password: putData.password} : line;
                 });
                 props.dispatch(loginAction.loginUserList(userLists));
                 history.push('/login');
