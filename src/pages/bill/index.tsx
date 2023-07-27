@@ -19,10 +19,10 @@ import dayjs from 'dayjs';
 import { DropDownView } from "src/component/dropdown-view";
 import { Aggregates } from "src/helper/Aggregates";
 import { AmountCalc } from "./config/config";
-import { uomList } from "../product";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BackIcon from '@mui/icons-material/ArrowBackIosNew';
+import { UOMObj } from "../product/config/config";
 
 function Bill (props: any) {
     let [state, setState] = useState({productSearchList: [], billDate: dayjs(new Date()), productLists: []} as any);
@@ -152,8 +152,7 @@ function Bill (props: any) {
             label: 'UOM',
             options: {         
                 customBodyRender: (value: string) => {
-                    let filterData = uomList.filter((line: any) => line.value === value);
-                    return `${filterData.length ? filterData[0]['text'] : ''}`;
+                    return `${UOMObj[value] || ''}`;
                 }
             }
         },
@@ -325,17 +324,17 @@ function Bill (props: any) {
                                     <div className="text-secondary fs-12">{line.productDescription}</div>
                                 </div>
                                 <div className={"col-3 pr-0 d-flex"}>
-                                    <div className={"h3"}>{line.stock}</div>
-                                    <div className={""}>{line.uom}</div>
+                                    <span className={"h3 m-0"}>{line.stock}</span>
+                                    <span style={{paddingTop: "10px"}}>{UOMObj[line.uom]}</span>
                                 </div>
-                                <div className="col-6 p-0 pt-3">
+                                <div className="col-6 p-0 pt-2">
                                     <Button variant="text" size={"small"} className={""} onClick={() => {
                                         setSidebar("edit");
                                         setSelectedProduct(line);
                                     }}>More</Button>
                                 </div>
                                 <div className="col-6 p-0">
-                                    <TextFieldView label="Qty" type={'number'} field={'qty'} className={'col-12'} required
+                                    <TextFieldView placeholder="Qty" type={'number'} field={'qty'} className={'col-12'} required
                                         onChange={(field: any, value: any) => {
                                             if (+line.stock < +value) {
                                                 props.dispatch(alertAction.error('Quantity is greater than stock'));

@@ -1,5 +1,5 @@
 import { MUIDataTableColumn } from "mui-datatables";
-import { uomList } from "src/pages/product";
+import { UOMObj } from "src/pages/product/config/config";
 
 export const columns: MUIDataTableColumn[] = [
     {
@@ -19,8 +19,7 @@ export const columns: MUIDataTableColumn[] = [
         label: 'UOM',
         options: {         
             customBodyRender: (value: string) => {
-                let filterData = uomList.filter((line: any) => line.value === value);
-                return `${filterData.length ? filterData[0]['text'] : ''}`;
+                return `${UOMObj[value] || ''}`;
             }
         }
     },

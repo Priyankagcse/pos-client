@@ -12,18 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import MUIDataTable, { MUIDataTableColumn, MUIDataTableOptions } from "mui-datatables";
 import AddIcon from '@mui/icons-material/Add';
 import { isNullOrUndefinedOrEmpty } from "src/common";
-
-let taxData = [
-    { text: '0%', value: '0' },
-    { text: '5%', value: '5' },
-    { text: '12%', value: '12' },
-    { text: '18%', value: '18' },
-    { text: '28%', value: '28' }
-];
-
-export let uomList = [
-    { text: 'Count', value: 'count' }
-];
+import { TaxData, UOMObj, uomList } from "./config/config";
 
 function Product(props: any) {
     let [state, setState] = useState({uom: 'count', gst: '0'} as any);
@@ -124,8 +113,7 @@ function Product(props: any) {
             label: 'UOM',
             options: {         
                 customBodyRender: (value: string) => {
-                    let filterData = uomList.filter((line: any) => line.value === value);
-                    return `${filterData.length ? filterData[0]['text'] : ''}`;
+                    return `${UOMObj[value] || ''}`;
                 }
             }
         },
@@ -284,7 +272,7 @@ function Product(props: any) {
                     </div>
                     <div className="col-12 col-sm-6 pb-4">
                         <DropDownView label="GST" type={'text'} field={'gst'} className={'col-12 '} required
-                            onChange={handleChange} value={state.gst} dataSource={taxData}
+                            onChange={handleChange} value={state.gst} dataSource={TaxData}
                             fields={{text: 'text', value: 'value'}} variant="standard"></DropDownView>
                     </div>
                     <div className="col-12 col-sm-6 pb-4">
