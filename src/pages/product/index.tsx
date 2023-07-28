@@ -9,18 +9,19 @@ import { Dispatch } from "redux";
 import { DropDownView } from "../../component/dropdown-view";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import MUIDataTable, { MUIDataTableColumn, MUIDataTableOptions } from "mui-datatables";
+import MUIDataTable, { MUIDataTableColumn, MUIDataTableMeta, MUIDataTableOptions } from "mui-datatables";
 import AddIcon from '@mui/icons-material/Add';
 import { isNullOrUndefinedOrEmpty } from "src/common";
-import { TaxData, UOMObj, uomList } from "./config/config";
+import { IProduct, IProductProps, TaxData, UOMObj, uomList } from "./config/config";
+import { IAPIReponse } from "src/config";
 
-function Product(props: any) {
-    let [state, setState] = useState({uom: 'count', gst: '0'} as any);
+function Product(props: IProductProps) {
+    let [state, setState] = useState<IProduct>({uom: 'count', gst: '0'});
     let [commonState, setCommonState] = useState({openConfirm: false, gridRows: [], editRowData: {}, actionType: '',
         openForm: false, perPageCount: 3, gridCount: 0, gridPagination: -1, allGridRows: [], maxRowLimit: 5, currentPage: 0,
         caller: '', searchText: '', sortColumn: '', sortDirection: ''} as any);
-    const handleChange = (field: any, value: any) => {
-        setState((prevState: any) => ({
+    const handleChange = (field: string, value: string) => {
+        setState((prevState) => ({
             ...prevState,
             [field]: value
         }));
@@ -34,8 +35,8 @@ function Product(props: any) {
         let productObj = { ...state };
         if (commonState.actionType === 'edit') {
             productObj['uuid'] = commonState.editRowData.uuid;
-            props.dispatch(apiActions.methodAction('put', PRODUCTAPI().PUT, productObj, (res: any) => {
-                let updatedGridData = commonState.allGridRows.map((gridLine: any, ind: number) => {
+            props.dispatch(apiActions.methodAction('put', PRODUCTAPI().PUT, productObj, (res: IAPIReponse) => {
+                let updatedGridData = commonState.allGridRows.map((gridLine: IProduct, ind: number) => {
                     if (gridLine.uuid === commonState.editRowData.uuid) {
                         return res.data;
                     }
@@ -44,7 +45,7 @@ function Product(props: any) {
                 stateReset(updatedGridData, 'edit');
             }));
         } else {
-            props.dispatch(apiActions.methodAction('post', PRODUCTAPI().POST, productObj, (res: any) => {
+            props.dispatch(apiActions.methodAction('post', PRODUCTAPI().POST, productObj, (res: IAPIReponse) => {
                 commonState.allGridRows.unshift(res.data);
                 stateReset(commonState.allGridRows, 'add');
             }));
@@ -52,7 +53,7 @@ function Product(props: any) {
     }
 
     const onButtonClick = (event: any, uuid: string, flag: string) => {
-        let filterData = commonState.gridRows.find((gridLine: any) => gridLine.uuid === uuid);
+        let filterData = commonState.gridRows.find((gridLine: IProduct) => gridLine.uuid === uuid);
         if (flag === 'edit') {
             setCommonState({ ...commonState, openForm: true, editRowData: filterData, actionType: 'edit'});
             setState({ partNumber: filterData.partNumber, productName: filterData.productName, uom: filterData.uom, gst: filterData.gst,
@@ -63,12 +64,12 @@ function Product(props: any) {
     }
 
     const prodDelete = () => {
-        props.dispatch(apiActions.methodAction('delete', PRODUCTAPI().DELETE, {uuid: commonState.editRowData.uuid}, (result: any) => {
+        props.dispatch(apiActions.methodAction('delete', PRODUCTAPI().DELETE, {uuid: commonState.editRowData.uuid}, (result: IAPIReponse) => {
             changePage(commonState.currentPage, {openConfirm: false, editRowData: {}, actionType: ''});
         }));
     }
 
-    const stateReset = (updatedGridData?: any, flag?: string) => {        
+    const stateReset = (updatedGridData?: IProduct[], flag?: string) => {        
         if (updatedGridData) {
             if (flag === 'add') {
                 let pagination = 0;
@@ -121,7 +122,7 @@ function Product(props: any) {
             name: 'gst',
             label: 'GST',
             options: {         
-                customBodyRender: (value: string, tableMeta: any) => `${value}%`
+                customBodyRender: (value: string, tableMeta: MUIDataTableMeta) => `${value}%`
             }
         },
         {
@@ -135,7 +136,7 @@ function Product(props: any) {
         {   name: 'actions', label: 'Actions',
             options: {
                 filter: false, sort: false,
-                customBodyRender: (value: string, tableMeta: any) => {
+                customBodyRender: (value: string, tableMeta: MUIDataTableMeta) => {
                     return (<>
                         <IconButton color="primary" onClick={(e) => onButtonClick(e, tableMeta.rowData[0], 'edit')}>
                             <EditIcon></EditIcon>
@@ -203,7 +204,7 @@ function Product(props: any) {
         }
     }
 
-    const changePage = (page: any, concatObj?: any, callerObj?: object) => {
+    const changePage = (page: number, concatObj?: any, callerObj?: object) => {
         let filterObj = callerObj;
         if (isNullOrUndefinedOrEmpty(filterObj)) {
             if (commonState.caller === 'prodSearch') {
@@ -219,7 +220,7 @@ function Product(props: any) {
             maxRowLimit: commonState.maxRowLimit,
             ...filterObj
         };
-        props.dispatch(apiActions.methodAction('put', PRODUCTAPI().GETPRODUCT, putData, (result: any) => {
+        props.dispatch(apiActions.methodAction('put', PRODUCTAPI().GETPRODUCT, putData, (result: IAPIReponse) => {
             let gridRows = result.data;
             if (result.pagination === 0) {
                 gridRows = gridRows.slice(putData.startPageLimit, (putData.startPageLimit + putData.endPageLimit));   
@@ -237,7 +238,7 @@ function Product(props: any) {
                 <h6 className="col px-0 py-1">Product List</h6>
                 <Button variant="contained" color="primary" onClick={() => {
                     setCommonState({ ...commonState, openForm: true });
-                    setState({ partNumber: '', productName: '', uom: 'count', gst: '0', price: '', productDescription: '' });
+                    setState({ partNumber: '', productName: '', uom: 'count', gst: '0', price: 0, productDescription: '' });
                 }}><AddIcon/>Add New</Button>
             </div>
             <MUIDataTable
@@ -283,7 +284,7 @@ function Product(props: any) {
                         <div className="col-6 col-sm-6 p-0">
                             <Button variant="contained" color="secondary" onClick={() => {
                             setCommonState({ ...commonState, openForm: false });
-                            setState({ partNumber: '', productName: '', uom: 'count', gst: '0', price: '', productDescription: '' });
+                            setState({ partNumber: '', productName: '', uom: 'count', gst: '0', price: 0, productDescription: '' });
                             }}>Cancel</Button>
                         </div>
                         <div className="col-6 col-sm-6 p-0" align="right">

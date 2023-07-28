@@ -1,6 +1,6 @@
 import { Button, IconButton, ListItem } from "@mui/material";
 import React, {useEffect, useState } from "react";
-import { columns } from "./config/config";
+import { IStockProps, columns } from "./config/config";
 import 'dayjs/locale/de';
 import MUIDataTable, { MUIDataTableOptions } from "mui-datatables";
 import { TextFieldView } from "src/component/textfield-view";
@@ -14,12 +14,14 @@ import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import { alertAction } from "../alert/alert-reducer";
+import { IProduct } from "../product/config/config";
+import { IAPIReponse } from "src/config";
 
-function Stock(props: any) {
-    let [state, setState] = useState({productSearchList: [], stockGridData: []} as any);
+function Stock(props: IStockProps) {
+    let [state, setState] = useState<{productSearchList: IProduct[], stockGridData: IProduct[], productName?: string, stock?: number}>({productSearchList: [], stockGridData: []});
     let [addProduct, setAddProduct] = useState(false);
-    const handleChange = (field: any, value: any) => {
-        setState((prevState: any) => ({
+    const handleChange = (field: string, value: any) => {
+        setState((prevState) => ({
             ...prevState,
             [field]: value
         }));
@@ -30,13 +32,13 @@ function Stock(props: any) {
     }, [])
 
     const productSearch = () => {
-        props.dispatch(apiActions.methodAction('get', PRODUCTAPI(props.loginCurrentUser.companyUuid, state.productName).PRODUCTSEARCH, {}, (res: any) => {
+        props.dispatch(apiActions.methodAction('get', PRODUCTAPI(props.loginCurrentUser.companyUuid, state.productName).PRODUCTSEARCH, {}, (res: IAPIReponse) => {
             handleChange('productSearchList', res.data);
         }));
     }
 
-    const stockUpdate = (prodLine: any, value: any) => {
-        let productSearchList = state.productSearchList.map((line: any, ind: number) => {
+    const stockUpdate = (prodLine: IProduct, value: number) => {
+        let productSearchList = state.productSearchList.map((line) => {
             if (prodLine.uuid === line.uuid) {
                 line['stock'] = value;
             }
@@ -46,7 +48,7 @@ function Stock(props: any) {
     }
 
     const productAdd = () => {
-        let filterStockData = state.productSearchList.filter((line: any) => +line.stock > 0);
+        let filterStockData = state.productSearchList.filter((line) => +line.stock > 0);
         if (filterStockData.length === 0) {
             props.dispatch(alertAction.error('Please fill stock'));
             return;
@@ -56,7 +58,7 @@ function Stock(props: any) {
             userUuid: props.loginCurrentUser.uuid
         };
         addCreatedBy(insertData);
-        props.dispatch(apiActions.methodAction('put', STOCKAPI().STOCKBULKINSERT, insertData, (res: any) => {
+        props.dispatch(apiActions.methodAction('put', STOCKAPI().STOCKBULKINSERT, insertData, (res: IAPIReponse) => {
             let concatData = (state.stockGridData).concat(filterStockData);
             handleChange('stockGridData', concatData);
             setAddProduct(false);
@@ -64,7 +66,7 @@ function Stock(props: any) {
     }
 
     const getStock = () => {
-        props.dispatch(apiActions.methodAction('get', STOCKAPI(props.loginCurrentUser.companyUuid).GET, {}, (res: any) => {
+        props.dispatch(apiActions.methodAction('get', STOCKAPI(props.loginCurrentUser.companyUuid).GET, {}, (res: IAPIReponse) => {
             handleChange('stockGridData', res.data);
         }));
     }
@@ -102,13 +104,13 @@ function Stock(props: any) {
                 </div>
                 <div className="col-12 p-0">
                     <TextFieldView label="Search" type={'text'} field={'productName'} className={'col-12'} required
-                        onChange={handleChange} value={state.productName} onKeyDown={(event: any) => {
-                            if (event.keyCode === 13) {
+                        onChange={handleChange} value={state.productName} onKeyDown={(event: KeyboardEvent) => {
+                            if (event.code === "Enter") {
                                 productSearch();
                             }
                         }} />
                 </div>
-                {state.productSearchList.map((line: any, ind: number) => {
+                {state.productSearchList.map((line, ind: number) => {
                     return <ListItem className="border-bottom px-0" key={ind}>
                             <div className="col p-0 lh-16">
                                 <div className="text-secondary">{line.partNumber}</div>
@@ -117,7 +119,7 @@ function Stock(props: any) {
                             </div>
                             <div className="col-3 p-0">
                                 <TextFieldView label="Stock" type={'number'} field={'stock'} className={'col-12'} required
-                                    onChange={(field: any, value: any) => stockUpdate(line, value)} value={state.stock} />
+                                    onChange={(field: string, value: number) => stockUpdate(line, value)} value={state.stock} />
                             </div>
                     </ListItem>
                 })}

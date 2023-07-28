@@ -1,4 +1,5 @@
-import { MUIDataTableColumn } from "mui-datatables";
+import { MUIDataTableColumn, MUIDataTableMeta } from "mui-datatables";
+import { IUser } from "src/pages/login/login-reducer";
 import { UOMObj } from "src/pages/product/config/config";
 
 export const columns: MUIDataTableColumn[] = [
@@ -27,7 +28,7 @@ export const columns: MUIDataTableColumn[] = [
         name: 'gst',
         label: 'GST',
         options: {         
-            customBodyRender: (value: string, tableMeta: any) => `${value}%`
+            customBodyRender: (value: string, tableMeta: MUIDataTableMeta) => `${value}%`
         }
     },
     {
@@ -39,3 +40,8 @@ export const columns: MUIDataTableColumn[] = [
         label: 'Product Description',
     }
 ];
+
+export interface IStockProps {
+    dispatch: Function;
+    loginCurrentUser: IUser;
+}

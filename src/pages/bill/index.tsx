@@ -3,7 +3,7 @@ import React, {useState } from "react";
 import { TextFieldView } from "src/component/textfield-view";
 import 'dayjs/locale/de';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import MUIDataTable, { MUIDataTableColumn, MUIDataTableOptions } from "mui-datatables";
+import MUIDataTable, { MUIDataTableColumn, MUIDataTableMeta, MUIDataTableOptions } from "mui-datatables";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
@@ -18,30 +18,36 @@ import AddIcon from '@mui/icons-material/Add';
 import dayjs from 'dayjs';
 import { DropDownView } from "src/component/dropdown-view";
 import { Aggregates } from "src/helper/Aggregates";
-import { AmountCalc } from "./config/config";
+import { AmountCalc, IBill, IBillProps } from "./config/config";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BackIcon from '@mui/icons-material/ArrowBackIosNew';
-import { UOMObj } from "../product/config/config";
+import { IProduct, UOMObj } from "../product/config/config";
+import { IAPIReponse } from "src/config";
 
-function Bill (props: any) {
-    let [state, setState] = useState({productSearchList: [], billDate: dayjs(new Date()), productLists: []} as any);
+function Bill (props: IBillProps) {
+    let [state, setState] = useState<IBill>({
+        billDate: dayjs(new Date()), totalAmt: 0
+    });
+    let [productSearchList, setProductSearchList] = useState<IProduct[]>([]);
+    let [productLists, setProductLists] = useState<IProduct[]>([]);
     let [sidebar, setSidebar] = useState("");
-    let [selectedProduct, setSelectedProduct] = useState({} as any);
+    let [isConfirm, setIsConfirm] = useState(false);
+    let [selectedProduct, setSelectedProduct] = useState<IProduct>({});
     
-    const handleChange = (field: any, value: any) => {
-        setState((prevState: any) => ({
+    const handleChange = (field: string, value: string | Date) => {
+        setState((prevState) => ({
             ...prevState,
             [field]: value
         }));
     };
 
-    const productChange = (field: any, value: any) => {
-        setSelectedProduct((prevState: any) => {
+    const productChange = (field: string, value: string) => {
+        setSelectedProduct((prevState) => {
             if (selectedProduct.discountType === "%" && field === "discountPer") {
-                prevState.discountAmt = value / 100 * prevState.price;
+                prevState.discountAmt = +value / 100 * prevState.price;
             } else if (selectedProduct.discountType === "Amt" && field === "discountAmt") {
-                prevState.discountPer = value / prevState.price * 100;
+                prevState.discountPer = +value / prevState.price * 100;
             }
             return {
                 ...prevState,
@@ -51,17 +57,17 @@ function Bill (props: any) {
     };
 
     const productSearch = () => {
-        props.dispatch(apiActions.methodAction('get', PRODUCTAPI(props.loginCurrentUser.companyUuid, state.productName).PRODUCTSEARCHWITHSTOCK, {}, (res: any) => {
-            handleChange('productSearchList', res.data);
+        props.dispatch(apiActions.methodAction('get', PRODUCTAPI(props.loginCurrentUser.companyUuid, state.productName).PRODUCTSEARCHWITHSTOCK, {}, (res: IAPIReponse) => {
+            setProductSearchList(res.data);
         }));
     }
 
     const productAdd = (isSingle?: boolean) => {
-        let filterStockData: any[] = []
+        let filterStockData: IProduct[] = []
         if (isSingle) {
             filterStockData = [AmountCalc(selectedProduct)];
         }
-        state.productSearchList.forEach((line: any) => {
+        productSearchList.forEach((line: IProduct) => {
             if (+line.qty > 0) {
                 AmountCalc(line);
                 filterStockData.push(line);
@@ -71,34 +77,34 @@ function Bill (props: any) {
             props.dispatch(alertAction.error('Please Enter Quantity'));
             return;
         }
-        let concatData = (state.productLists).concat(filterStockData);
+        let concatData = (productLists).concat(filterStockData);
         let totalAmt = Aggregates.sum(concatData, "amount");
-        handleChange('productLists', concatData);
-        setState((prevState: any) => ({
+        setProductLists(concatData);
+        setState((prevState) => ({
             ...prevState,
             totalAmt: totalAmt
         }));
         setSidebar("");
     }
 
-    const stockUpdate = (prodLine: any, value: any) => {
-        let productSearchList = state.productSearchList.map((line: any, ind: number) => {
+    const stockUpdate = (prodLine: IProduct, value: number) => {
+        let list = productSearchList.map((line) => {
             if (prodLine.uuid === line.uuid) {
                 line['qty'] = value;
             }
             return line;
         });
-        handleChange('productSearchList', productSearchList);
+        setProductSearchList(list);
     }
 
     const onButtonClick = (event: any, uuid: string, flag: string) => {
         if (flag === 'edit') {
-            let filterData = state.productLists.find((gridLine: any) => gridLine.uuid === uuid);
+            let filterData = productLists.find((gridLine) => gridLine.uuid === uuid);
             setSidebar("edit");
             setSelectedProduct(filterData);
         } else {
-            let filterData = state.productLists.filter((gridLine: any) => gridLine.uuid === uuid);
-            handleChange('productLists', filterData);
+            let filterData = productLists.filter((gridLine) => gridLine.uuid === uuid);
+            setProductLists(filterData);
         }
     }
 
@@ -116,7 +122,7 @@ function Bill (props: any) {
             name: 'partNumber',
             label: 'Product',
             options: {         
-                customBodyRender: (value: string, tableMeta: any) => {
+                customBodyRender: (value: string, tableMeta: MUIDataTableMeta) => {
                     return <div className="lh-16">
                         <div className="text-secondary">{tableMeta.rowData[1]}</div>
                         <div>{tableMeta.rowData[2]}</div>
@@ -160,7 +166,7 @@ function Bill (props: any) {
             name: 'gst',
             label: 'GST',
             options: {         
-                customBodyRender: (value: string, tableMeta: any) => `${value}%`
+                customBodyRender: (value: string, tableMeta: MUIDataTableMeta) => `${value}%`
             }
         },
         {
@@ -183,7 +189,7 @@ function Bill (props: any) {
         {   name: 'actions', label: 'Actions',
             options: {
                 filter: false, sort: false,
-                customBodyRender: (value: string, tableMeta: any) => {
+                customBodyRender: (value: string, tableMeta: MUIDataTableMeta) => {
                     return (<>
                         <IconButton color="primary" onClick={(e) => onButtonClick(e, tableMeta.rowData[0], 'edit')}>
                             <EditIcon></EditIcon>
@@ -230,23 +236,26 @@ function Bill (props: any) {
     }
 
     const billSave = () => {
-        let putData: any = {
+        let putData = {
             companyUuid: props.loginCurrentUser.companyUuid,
             userUuid: props.loginCurrentUser.uuid,
             customerName: state.customerName,
             phoneNumber: state.phoneNumber,
             address: state.address,
             billDate: '2023-07-20T06:39:34.000Z',
-            lines: state.productLists
+            lines: productLists
         };
         addCreatedBy(putData);
-        props.dispatch(apiActions.methodAction('put', BILLAPI().SAVE, putData, (res: any) => {
-            setState({ ...state, ...{isConfirm: true, billNo: res.data.billNumber}});
+        props.dispatch(apiActions.methodAction('put', BILLAPI().SAVE, putData, (res: IAPIReponse) => {
+            setState({ ...state, ...{billNo: res.data.billNumber}});
+            setIsConfirm(true);
         }));
     }
 
     const billClose = () => {
-        setState({ ...state, isConfirm: false, customerName: '', phoneNumber: '', address: '', billDate: dayjs(new Date()), productLists: [] });
+        setState({ ...state, customerName: '', phoneNumber: '', address: '', billDate: dayjs(new Date())});
+        setProductLists([]);
+        setIsConfirm(false);
     }
 
     return <div>
@@ -287,12 +296,13 @@ function Bill (props: any) {
                         <h6 className="col px-0 py-1"></h6>
                         {!sidebar && <Button variant="contained" color="primary" startIcon={<AddIcon/>} onClick={() => {
                             setSidebar("search");
-                            setState({...state, productSearchList: [], productName: ''})
+                            setState({...state, productName: ''})
+                            setProductSearchList([])
                         }}>Add Product</Button>}
                     </div>
                     <MUIDataTable
                         title={""}
-                        data={state.productLists}
+                        data={productLists}
                         columns={Columns}
                         options={options}
                     />
@@ -309,14 +319,14 @@ function Bill (props: any) {
                 </div>
                 <div className="">
                     <TextFieldView label="Search" type={'text'} field={'productName'} className={'col-12'} required
-                        onChange={handleChange} value={state.productName} onKeyDown={(event: any) => {
-                            if (event.keyCode === 13) {
+                        onChange={handleChange} value={state.productName} onKeyDown={(event: KeyboardEvent) => {
+                            if (event.code === "Enter") {
                                 productSearch();
                             }
                         }} />
                 </div>
                 <div className="">
-                    {state.productSearchList.map((line: any, ind: number) => {
+                    {productSearchList.map((line, ind: number) => {
                         return <ListItem className="border-bottom px-0 row m-0" key={ind}>
                                 <div className="col-9 p-0 lh-16">
                                     <div className="text-secondary">{line.partNumber}</div>
@@ -335,7 +345,7 @@ function Bill (props: any) {
                                 </div>
                                 <div className="col-6 p-0">
                                     <TextFieldView placeholder="Qty" type={'number'} field={'qty'} className={'col-12'} required
-                                        onChange={(field: any, value: any) => {
+                                        onChange={(field: string, value: number) => {
                                             if (+line.stock < +value) {
                                                 props.dispatch(alertAction.error('Quantity is greater than stock'));
                                                 stockUpdate(line, line.stock);
@@ -395,7 +405,7 @@ function Bill (props: any) {
                 </div>
             </div>}
         </div>
-        <Dialog open={state.isConfirm} onClose={() => billClose()}>
+        <Dialog open={isConfirm} onClose={() => billClose()}>
             <DialogTitle>{state.billNo + " Bill Generated Successfully"}</DialogTitle>
             <DialogActions className="pb-3">
                 <Button variant="contained" color="primary" onClick={() => billClose()}>Ok</Button>

@@ -1,3 +1,5 @@
+import { IUser } from "src/pages/login/login-reducer";
+
 export let TaxData = [
     { text: '0%', value: '0' },
     { text: '5%', value: '5' },
@@ -11,3 +13,24 @@ export let uomList = [
 ];
 
 export let UOMObj = {count: 'Count'};
+
+export interface IProduct {
+    uuid?: string;
+    partNumber?: string;
+    productName?: string;
+    productDescription?: string;
+    uom?: string;
+    gst?: string;
+    price?: number;
+    purchasePrice?: number;
+    stock?: number;
+    discountType?: string;
+    discountPer?: number;
+    discountAmt?: number;
+    qty?: number;
+}
+
+export interface IProductProps {
+    dispatch: Function;
+    loginCurrentUser: IUser;
+}

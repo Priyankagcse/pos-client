@@ -10,6 +10,9 @@ export interface IUser {
     userLists: object[];
     loginCurrentUser: object;
     isHomeToLogin: boolean;
+    uuid?: string;
+    userName?: string;
+    companyUuid?: string;
 }
 
 export interface IUserAct {
