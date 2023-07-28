@@ -12,6 +12,10 @@ export const columns: MUIDataTableColumn[] = [
         label: 'Product Name',
     },
     {
+        name: 'productDescription',
+        label: 'Product Description',
+    },
+    {
         name: 'stock',
         label: 'Stock',
     },
@@ -35,10 +39,6 @@ export const columns: MUIDataTableColumn[] = [
         name: 'price',
         label: 'Price',
     },
-    {
-        name: 'productDescription',
-        label: 'Product Description',
-    }
 ];
 
 export interface IStockProps {

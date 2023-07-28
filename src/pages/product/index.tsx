@@ -110,6 +110,10 @@ function Product(props: IProductProps) {
             label: 'Product Name',
         },
         {
+            name: 'productDescription',
+            label: 'Product Description',
+        },
+        {
             name: 'uom',
             label: 'UOM',
             options: {         
@@ -128,10 +132,6 @@ function Product(props: IProductProps) {
         {
             name: 'price',
             label: 'Price',
-        },
-        {
-            name: 'productDescription',
-            label: 'Product Description',
         },
         {   name: 'actions', label: 'Actions',
             options: {

@@ -63,21 +63,35 @@ function Bill (props: IBillProps) {
     }
 
     const productAdd = (isSingle?: boolean) => {
-        let filterStockData: IProduct[] = []
+        let filterStocks: IProduct[] = []
         if (isSingle) {
-            filterStockData = [AmountCalc(selectedProduct)];
+            filterStocks = [AmountCalc(selectedProduct)];
         }
         productSearchList.forEach((line: IProduct) => {
             if (+line.qty > 0) {
                 AmountCalc(line);
-                filterStockData.push(line);
+                filterStocks.push(line);
             }
         });
-        if (filterStockData.length === 0) {
+        if (filterStocks.length === 0) {
             props.dispatch(alertAction.error('Please Enter Quantity'));
             return;
         }
-        let concatData = (productLists).concat(filterStockData);
+        
+        productLists = productLists.map((product) => {
+            let ind = filterStocks.findIndex((filterStock) => filterStock.uuid === product.uuid)
+            if (ind !== -1) {
+                if (filterStocks[ind].isEdit) {
+                    product.qty = +filterStocks[ind].qty;
+                } else {
+                    product.qty += +filterStocks[ind].qty;
+                }
+                filterStocks.splice(ind, 1);
+            }
+            return product;
+        });
+
+        let concatData = (productLists).concat(filterStocks);
         let totalAmt = Aggregates.sum(concatData, "amount");
         setProductLists(concatData);
         setState((prevState) => ({
@@ -90,7 +104,7 @@ function Bill (props: IBillProps) {
     const stockUpdate = (prodLine: IProduct, value: number) => {
         let list = productSearchList.map((line) => {
             if (prodLine.uuid === line.uuid) {
-                line['qty'] = value;
+                line['qty'] = +value;
             }
             return line;
         });
@@ -101,9 +115,14 @@ function Bill (props: IBillProps) {
         if (flag === 'edit') {
             let filterData = productLists.find((gridLine) => gridLine.uuid === uuid);
             setSidebar("edit");
-            setSelectedProduct(filterData);
+            setSelectedProduct({...filterData, isEdit: true});
         } else {
-            let filterData = productLists.filter((gridLine) => gridLine.uuid === uuid);
+            let filterData = productLists.filter((gridLine) => gridLine.uuid !== uuid);
+            let totalAmt = Aggregates.sum(filterData, "amount");
+            setState((prevState) => ({
+                ...prevState,
+                totalAmt: totalAmt
+            }));
             setProductLists(filterData);
         }
     }

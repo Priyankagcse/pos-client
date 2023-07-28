@@ -28,6 +28,7 @@ export interface IProduct {
     discountPer?: number;
     discountAmt?: number;
     qty?: number;
+    isEdit?: boolean
 }
 
 export interface IProductProps {
