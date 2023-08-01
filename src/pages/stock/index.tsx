@@ -18,7 +18,7 @@ import { IProduct } from "../product/config/config";
 import { IAPIReponse } from "src/config";
 
 function Stock(props: IStockProps) {
-    let [state, setState] = useState<{productSearchList: IProduct[], stockGridData: IProduct[], productName?: string, stock?: number}>({productSearchList: [], stockGridData: []});
+    let [state, setState] = useState<{productSearchList: IProduct[], stockGridData: IProduct[], productName?: string, stock?: number, purchasePrice?: number}>({productSearchList: [], stockGridData: []});
     let [addProduct, setAddProduct] = useState(false);
     const handleChange = (field: string, value: any) => {
         setState((prevState) => ({
@@ -37,10 +37,10 @@ function Stock(props: IStockProps) {
         }));
     }
 
-    const stockUpdate = (prodLine: IProduct, value: number) => {
+    const stockUpdate = (prodLine: IProduct, value: number, caller: string) => {
         let productSearchList = state.productSearchList.map((line) => {
             if (prodLine.uuid === line.uuid) {
-                line['stock'] = value;
+                line[caller] = value;
             }
             return line;
         });
@@ -119,7 +119,11 @@ function Stock(props: IStockProps) {
                             </div>
                             <div className="col-3 p-0">
                                 <TextFieldView label="Stock" type={'number'} field={'stock'} className={'col-12'} required
-                                    onChange={(field: string, value: number) => stockUpdate(line, value)} value={state.stock} />
+                                    onChange={(field: string, value: number) => stockUpdate(line, value, 'stock')} value={state.stock} />
+                            </div>
+                            <div className="col-3 p-0">
+                                <TextFieldView label="Purchase Price" type={'number'} field={'purchasePrice'} className={'col-12'} required
+                                    onChange={(field: string, value: number) => stockUpdate(line, value, 'purchasePrice')} value={state.purchasePrice} />
                             </div>
                     </ListItem>
                 })}

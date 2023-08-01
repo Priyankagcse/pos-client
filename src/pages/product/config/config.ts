@@ -21,7 +21,7 @@ export interface IProduct {
     productDescription?: string;
     uom?: string;
     gst?: string;
-    price?: number;
+    salePrice?: number;
     purchasePrice?: number;
     stock?: number;
     discountType?: string;

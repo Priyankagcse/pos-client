@@ -41,3 +41,10 @@ export const BILLAPI = () => {
         SAVE: API_URL + 'billSave'
     };
 };
+
+export const BILLHISTORYAPI = (firstParam?: any, secondParam?: any) => {
+    return {
+        HEADER: API_URL + `billHeaderHistory/${firstParam}`,
+        LINES: API_URL + `billLinesHistory/${firstParam}/${secondParam}`
+    };
+};

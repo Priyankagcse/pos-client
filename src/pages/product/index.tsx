@@ -57,7 +57,7 @@ function Product(props: IProductProps) {
         if (flag === 'edit') {
             setCommonState({ ...commonState, openForm: true, editRowData: filterData, actionType: 'edit'});
             setState({ partNumber: filterData.partNumber, productName: filterData.productName, uom: filterData.uom, gst: filterData.gst,
-                price: filterData.price, productDescription: filterData.productDescription });
+                salePrice: filterData.salePrice, productDescription: filterData.productDescription });
         } else {
             setCommonState({ ...commonState, openConfirm: true, editRowData: filterData, actionType: 'delete'});
         }
@@ -71,8 +71,11 @@ function Product(props: IProductProps) {
 
     const stateReset = (updatedGridData?: IProduct[], flag?: string) => {        
         if (updatedGridData) {
+            let pagination = 0;
+            if (commonState.gridCount > commonState.maxRowLimit) {
+                pagination = 1;
+            }
             if (flag === 'add') {
-                let pagination = 0;
                 let gridCount = commonState.gridCount + 1;
                 if (gridCount > commonState.maxRowLimit) {
                     pagination = 1;
@@ -80,6 +83,8 @@ function Product(props: IProductProps) {
                 let sliceData = updatedGridData.slice(0, commonState.perPageCount);
                 setCommonState({ ...commonState, allGridRows: updatedGridData, gridRows: sliceData || [], currentPage: 0,
                     gridCount: gridCount, gridPagination: pagination, openForm: false, editRowData: {}, actionType: '' });
+            } else if (pagination) {
+                setCommonState({ ...commonState, allGridRows: updatedGridData, gridRows: updatedGridData || [], openForm: false, editRowData: {}, actionType: '' });
             } else {
                 let startPageLimit = commonState.currentPage * commonState.perPageCount;
                 let endPageLimit = startPageLimit + commonState.perPageCount;
@@ -130,8 +135,8 @@ function Product(props: IProductProps) {
             }
         },
         {
-            name: 'price',
-            label: 'Price',
+            name: 'salePrice',
+            label: 'Sale Price',
         },
         {   name: 'actions', label: 'Actions',
             options: {
@@ -238,7 +243,7 @@ function Product(props: IProductProps) {
                 <h6 className="col px-0 py-1">Product List</h6>
                 <Button variant="contained" color="primary" onClick={() => {
                     setCommonState({ ...commonState, openForm: true });
-                    setState({ partNumber: '', productName: '', uom: 'count', gst: '0', price: 0, productDescription: '' });
+                    setState({ partNumber: '', productName: '', uom: 'count', gst: '0', salePrice: 0, productDescription: '' });
                 }}><AddIcon/>Add New</Button>
             </div>
             <MUIDataTable
@@ -277,14 +282,14 @@ function Product(props: IProductProps) {
                             fields={{text: 'text', value: 'value'}} variant="standard"></DropDownView>
                     </div>
                     <div className="col-12 col-sm-6 pb-4">
-                        <TextFieldView label="Price" type={'number'} field={'price'} className={'col-12 '} required
-                            onChange={handleChange} value={state.price} />
+                        <TextFieldView label="Sale Price" type={'number'} field={'salePrice'} className={'col-12 '} required
+                            onChange={handleChange} value={state.salePrice} />
                     </div>
                     <div className="row m-0">
                         <div className="col-6 col-sm-6 p-0">
                             <Button variant="contained" color="secondary" onClick={() => {
                             setCommonState({ ...commonState, openForm: false });
-                            setState({ partNumber: '', productName: '', uom: 'count', gst: '0', price: 0, productDescription: '' });
+                            setState({ partNumber: '', productName: '', uom: 'count', gst: '0', salePrice: 0, productDescription: '' });
                             }}>Cancel</Button>
                         </div>
                         <div className="col-6 col-sm-6 p-0" align="right">

@@ -45,9 +45,9 @@ function Bill (props: IBillProps) {
     const productChange = (field: string, value: string) => {
         setSelectedProduct((prevState) => {
             if (selectedProduct.discountType === "%" && field === "discountPer") {
-                prevState.discountAmt = +value / 100 * prevState.price;
+                prevState.discountAmt = +value / 100 * prevState.salePrice;
             } else if (selectedProduct.discountType === "Amt" && field === "discountAmt") {
-                prevState.discountPer = +value / prevState.price * 100;
+                prevState.discountPer = +value / prevState.salePrice * 100;
             }
             return {
                 ...prevState,
@@ -193,8 +193,8 @@ function Bill (props: IBillProps) {
             label: 'Discount',
         },
         {
-            name: 'price',
-            label: 'Price',
+            name: 'salePrice',
+            label: 'Sale Price',
         },
         {
             name: 'amount',
@@ -234,17 +234,6 @@ function Bill (props: IBillProps) {
             return (
                 <TableFooter className={"footerClasses"} >
                   <TableRow>
-                    {/* {opts.columns.map((col, index) => {
-                        if (col.name === 'price') {
-                          return (
-                            <TableCell key={index} size="small">
-                              100
-                            </TableCell>
-                          )
-                        }
-                        return <TableCell key={index} className={"footerClasses"} />;
-                    }
-                    )} */}
                     <TableCell colSpan={5}></TableCell>
                     <TableCell sx={{fontSize: "14px"}}>Total</TableCell>
                     <TableCell align="right" sx={{fontSize: "16px", color: "black", fontWeight: 600}}>{state.totalAmt}</TableCell>
@@ -418,8 +407,8 @@ function Bill (props: IBillProps) {
                             onChange={productChange} value={selectedProduct.qty} />
                     </div>
                     <div className="col-12 pb-4">
-                        <TextFieldView label="Sale Price" type={'number'} field={'price'} className={'col-12 '} required
-                            onChange={productChange} value={selectedProduct.price} />
+                        <TextFieldView label="Sale Price" type={'number'} field={'salePrice'} className={'col-12 '} required
+                            onChange={productChange} value={selectedProduct.salePrice} />
                     </div>
                 </div>
             </div>}
