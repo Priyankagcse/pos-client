@@ -24,6 +24,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import BackIcon from '@mui/icons-material/ArrowBackIosNew';
 import { IProduct, UOMObj } from "../product/config/config";
 import { IAPIReponse } from "src/config";
+import moment from "moment";
 
 function Bill (props: IBillProps) {
     let [state, setState] = useState<IBill>({
@@ -103,7 +104,7 @@ function Bill (props: IBillProps) {
 
     const stockUpdate = (prodLine: IProduct, value: number) => {
         let list = productSearchList.map((line) => {
-            if (prodLine.uuid === line.uuid) {
+            if (prodLine.uuid === line.uuid && prodLine.purchasePrice === line.purchasePrice) {
                 line['qty'] = +value;
             }
             return line;
@@ -244,20 +245,24 @@ function Bill (props: IBillProps) {
     }
 
     const billSave = () => {
-        let putData = {
-            companyUuid: props.loginCurrentUser.companyUuid,
-            userUuid: props.loginCurrentUser.uuid,
-            customerName: state.customerName,
-            phoneNumber: state.phoneNumber,
-            address: state.address,
-            billDate: '2023-07-20T06:39:34.000Z',
-            lines: productLists
-        };
-        addCreatedBy(putData);
-        props.dispatch(apiActions.methodAction('put', BILLAPI().SAVE, putData, (res: IAPIReponse) => {
-            setState({ ...state, ...{billNo: res.data.billNumber}});
-            setIsConfirm(true);
-        }));
+        if (productLists.length === 0) {
+            props.dispatch(alertAction.error('Please Add Any Products'));
+        } else {
+            let putData = {
+                companyUuid: props.loginCurrentUser.companyUuid,
+                userUuid: props.loginCurrentUser.uuid,
+                customerName: state.customerName,
+                phoneNumber: state.phoneNumber,
+                address: state.address,
+                billDate: moment(state.billDate['$d']).format("YYYY-MM-DD h:mm:ss"),
+                lines: productLists
+            };
+            addCreatedBy(putData);
+            props.dispatch(apiActions.methodAction('put', BILLAPI().SAVE, putData, (res: IAPIReponse) => {
+                setState({ ...state, ...{billNo: res.data.billNumber}});
+                setIsConfirm(true);
+            }));
+        }
     }
 
     const billClose = () => {
