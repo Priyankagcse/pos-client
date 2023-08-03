@@ -7,6 +7,7 @@ import { history } from 'src/helper/history';
 import Product from 'src/pages/product';
 import Bill from 'src/pages/bill';
 import Stock from 'src/pages/stock';
+import BillHistory from 'src/pages/billhistory';
 
 function NotFound() {
     return <div className={'m-4'} align={'center'}>
@@ -33,6 +34,8 @@ function HomeRouterView(props: any) {
                 return Product;
             case 'Bill':
                 return Bill;
+            case 'BillHistory':
+                return BillHistory;
             case 'Logout':
                 return () => <></>;
             case 'Stock':
