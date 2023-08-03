@@ -34,3 +34,10 @@ export interface IBillHistoryProps {
     dispatch: Function;
     loginCurrentUser: IUser;
 }
+
+export interface IBillFilter {
+    customerName?: string;
+    billNo?: string;
+    fromDate?: Date;
+    toDate?: Date;
+}

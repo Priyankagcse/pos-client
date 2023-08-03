@@ -8,14 +8,26 @@ import { IState } from "src/initialload/state-interface";
 import { Dispatch } from "redux";
 import { IProduct } from "../product/config/config";
 import { IAPIReponse } from "src/config";
-import { IBillHistoryProps, columns } from "./config/config";
+import { IBillFilter, IBillHistoryProps, columns } from "./config/config";
 import CloseIcon from '@mui/icons-material/Close';
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { TextFieldView } from "src/component/textfield-view";
 
 function BillHistory(props: IBillHistoryProps) {
     let [state, setState] = useState<{billLineLists: IProduct[], billHeaderGridData: IProduct[], productName?: string}>({billLineLists: [], billHeaderGridData: []});
     let [addProduct, setAddProduct] = useState(false);
+    let [filter, setFilter] = useState<IBillFilter>({});
+    
     const handleChange = (field: string, value: any) => {
         setState((prevState) => ({
+            ...prevState,
+            [field]: value
+        }));
+    };
+
+    const changeFilter = (field: string, value: any) => {
+        setFilter((prevState) => ({
             ...prevState,
             [field]: value
         }));
@@ -47,6 +59,34 @@ function BillHistory(props: IBillHistoryProps) {
     return <div>
         <div className="d-flex py-2">
             <h6 className="col px-0 py-1">Bill History</h6>
+        </div>
+        <div className={"row m-0"}>
+            <div className="col-4 pb-4">
+                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
+                    <DatePicker
+                        label="From Date"
+                        value={filter.fromDate}
+                        onChange={(newValue: Date) => changeFilter("fromDate", newValue)}
+                        slotProps={{ textField: { variant: 'standard', } }}
+
+                    />
+                    <DatePicker
+                        label="To Date"
+                        value={filter.toDate}
+                        onChange={(newValue: Date) => changeFilter("toDate", newValue)}
+                        slotProps={{ textField: { variant: 'standard', } }}
+
+                    />
+                </LocalizationProvider>
+            </div>
+            <div className="col-4 pb-4">
+                <TextFieldView label="Customer Name" field={'customerName'} className={'col-12 col-sm-12'}
+                    onChange={changeFilter} value={filter.billNo}/>
+            </div>
+            <div className="col-4 pb-4">
+                <TextFieldView label="Bill Number" field={'billNo'} className={'col-12 col-sm-12'}
+                    onChange={changeFilter} value={filter.billNo}/>
+            </div>
             <Button variant="contained" color="primary" onClick={() => getBillHeaedr()}>Filter</Button>
         </div>
         <div className="row m-0">
