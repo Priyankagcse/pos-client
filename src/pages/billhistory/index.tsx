@@ -2,7 +2,7 @@ import { Button, IconButton, ListItem } from "@mui/material";
 import React, { useState } from "react";
 import MUIDataTable, { MUIDataTableOptions } from "mui-datatables";
 import { apiActions } from "src/action/action";
-import { STOCKAPI } from "src/apiurl";
+import { BILLHISTORYAPI } from "src/apiurl";
 import { connect } from "react-redux";
 import { IState } from "src/initialload/state-interface";
 import { Dispatch } from "redux";
@@ -12,7 +12,7 @@ import { IBillHistoryProps, columns } from "./config/config";
 import CloseIcon from '@mui/icons-material/Close';
 
 function BillHistory(props: IBillHistoryProps) {
-    let [state, setState] = useState<{productSearchList: IProduct[], stockGridData: IProduct[], productName?: string, stock?: number, purchasePrice?: number}>({productSearchList: [], stockGridData: []});
+    let [state, setState] = useState<{billLineLists: IProduct[], billHeaderGridData: IProduct[], productName?: string}>({billLineLists: [], billHeaderGridData: []});
     let [addProduct, setAddProduct] = useState(false);
     const handleChange = (field: string, value: any) => {
         setState((prevState) => ({
@@ -21,14 +21,17 @@ function BillHistory(props: IBillHistoryProps) {
         }));
     };
 
-    const getStock = () => {
-        props.dispatch(apiActions.methodAction('get', STOCKAPI(props.loginCurrentUser.companyUuid).GET, {}, (res: IAPIReponse) => {
-            handleChange('stockGridData', res.data);
+    const getBillHeaedr = () => {
+        props.dispatch(apiActions.methodAction('get', BILLHISTORYAPI(props.loginCurrentUser.companyUuid).HEADER, {}, (res: IAPIReponse) => {
+            handleChange('billHeaderGridData', res.data);
         }));
     }
 
-    const getBill = (rowData: string[]) => {
-        setAddProduct(true);
+    const getBillLines = (rowData: string[]) => {
+        props.dispatch(apiActions.methodAction('get', BILLHISTORYAPI(props.loginCurrentUser.companyUuid, rowData[0]).LINES, {}, (res: IAPIReponse) => {
+            setAddProduct(true);
+            setState({ ...state, billLineLists: res.data})
+        }));
     }
 
     const options: MUIDataTableOptions = {
@@ -38,19 +41,19 @@ function BillHistory(props: IBillHistoryProps) {
         selectableRowsHideCheckboxes: true,
         download: false,
         print: false,
-        onRowClick: getBill,
+        onRowClick: getBillLines,
     }
 
     return <div>
         <div className="d-flex py-2">
             <h6 className="col px-0 py-1">Bill History</h6>
-            <Button variant="contained" color="primary" onClick={() => getStock()}>Filter</Button>
+            <Button variant="contained" color="primary" onClick={() => getBillHeaedr()}>Filter</Button>
         </div>
         <div className="row m-0">
             <div className={"col-12 px-0 py-2 " + (addProduct ? "col-sm-9" : "col-sm-12")}>
                 <MUIDataTable
                     title={""}
-                    data={state.stockGridData}
+                    data={state.billHeaderGridData}
                     columns={columns}
                     options={options}
                 />                    
@@ -60,14 +63,14 @@ function BillHistory(props: IBillHistoryProps) {
                     <div className="col px-0 py-2">Bill Details</div>
                     <IconButton onClick={() => setAddProduct(false)}><CloseIcon/></IconButton>
                 </div>
-                {state.productSearchList.map((line, ind: number) => {
+                {state.billLineLists.map((line, ind: number) => {
                     return <React.Fragment key={ind}>
                         <ListItem className="border-bottom px-0">
-                                <div className="col p-0 lh-16">
-                                    <div className="text-secondary">{line.partNumber}</div>
-                                    <div>{line.productName}</div>
-                                    <div className="text-secondary fs-12">{line.productDescription}</div>
-                                </div>
+                            <div className="col p-0 lh-16">
+                                <div className="text-secondary">{line.partNumber}</div>
+                                <div>{line.productName}</div>
+                                <div className="text-secondary fs-12">{line.productDescription}</div>
+                            </div>
                         </ListItem>
                     </React.Fragment>
                 })}

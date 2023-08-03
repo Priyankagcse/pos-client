@@ -3,7 +3,16 @@ import { IUser } from "src/pages/login/login-reducer";
 
 export const columns: MUIDataTableColumn[] = [
     {
-        name: 'billNo',
+        name: 'uuid',
+        label: '',
+        options: {
+            display: false,
+            viewColumns: false,
+            searchable: false
+        }
+    },
+    {
+        name: 'billNumber',
         label: 'Bill Number',
     },
     {
