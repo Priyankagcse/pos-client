@@ -44,7 +44,7 @@ export const BILLAPI = () => {
 
 export const BILLHISTORYAPI = (firstParam?: any, secondParam?: any) => {
     return {
-        HEADER: API_URL + `billHeaderHistory/${firstParam}`,
+        HEADER: API_URL + `billHeaderHistory`,
         LINES: API_URL + `billLinesHistory/${firstParam}/${secondParam}`
     };
 };

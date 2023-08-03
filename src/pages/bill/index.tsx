@@ -249,7 +249,6 @@ function Bill (props: IBillProps) {
             props.dispatch(alertAction.error('Please Add Any Products'));
         } else {
             let putData = {
-                companyUuid: props.loginCurrentUser.companyUuid,
                 userUuid: props.loginCurrentUser.uuid,
                 customerName: state.customerName,
                 phoneNumber: state.phoneNumber,

@@ -34,7 +34,7 @@ function BillHistory(props: IBillHistoryProps) {
     };
 
     const getBillHeaedr = () => {
-        props.dispatch(apiActions.methodAction('get', BILLHISTORYAPI(props.loginCurrentUser.companyUuid).HEADER, {}, (res: IAPIReponse) => {
+        props.dispatch(apiActions.methodAction('put', BILLHISTORYAPI().HEADER, filter, (res: IAPIReponse) => {
             handleChange('billHeaderGridData', res.data);
         }));
     }
@@ -81,7 +81,7 @@ function BillHistory(props: IBillHistoryProps) {
             </div>
             <div className="col-4 pb-4">
                 <TextFieldView label="Customer Name" field={'customerName'} className={'col-12 col-sm-12'}
-                    onChange={changeFilter} value={filter.billNo}/>
+                    onChange={changeFilter} value={filter.customerName}/>
             </div>
             <div className="col-4 pb-4">
                 <TextFieldView label="Bill Number" field={'billNo'} className={'col-12 col-sm-12'}

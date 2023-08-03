@@ -219,7 +219,6 @@ function Product(props: IProductProps) {
             }
         }
         let putData = {
-            companyUuid: props.loginCurrentUser.companyUuid,
             startPageLimit: page * commonState.perPageCount,
             endPageLimit: commonState.perPageCount,
             maxRowLimit: commonState.maxRowLimit,

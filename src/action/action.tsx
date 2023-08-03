@@ -10,7 +10,7 @@ export const apiActions = {
 function methodAction(method: string, url: any, obj: any, succ?: any, fail?: any) {
     return (dispatch: any, getState: any) => {
         dispatch(progressAction.show());
-        let requestObj = {...obj, companyUuid: 'c5b35f04-1f9e-11ee-833f-e454e8b752d8'};
+        let requestObj = {...obj, companyUuid: getState().loginUser.loginCurrentUser.companyUuid};
         if (method === 'post') {
             addCreatedBy(requestObj);
         } else if (method === 'put') {
