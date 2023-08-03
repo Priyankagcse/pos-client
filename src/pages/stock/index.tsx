@@ -83,7 +83,10 @@ function Stock(props: IStockProps) {
     return <div>
         <div className="d-flex py-2">
             <h6 className="col px-0 py-1">Stock</h6>
-            {!addProduct && <Button variant="contained" color="primary" onClick={() => setAddProduct(true)}><AddIcon/>Add Stock</Button>}
+            {!addProduct && <Button variant="contained" color="primary" onClick={() => {
+                setAddProduct(true);
+                setState({...state, productSearchList: [], productName: ''});
+            }}><AddIcon/>Add Stock</Button>}
         </div>
         <div className="row m-0">
             <div className={"col-12 px-0 py-2 " + (addProduct ? "col-sm-9" : "col-sm-12")}>
@@ -119,11 +122,11 @@ function Stock(props: IStockProps) {
                             </div>
                             <div className="col-3 p-0">
                                 <TextFieldView label="Stock" type={'number'} field={'stock'} className={'col-12'} required
-                                    onChange={(field: string, value: number) => stockUpdate(line, value, 'stock')} value={state.stock} />
+                                    onChange={(field: string, value: number) => stockUpdate(line, value, 'stock')} value={line.stock} />
                             </div>
                             <div className="col-3 p-0">
                                 <TextFieldView label="Purchase Price" type={'number'} field={'purchasePrice'} className={'col-12'} required
-                                    onChange={(field: string, value: number) => stockUpdate(line, value, 'purchasePrice')} value={state.purchasePrice} />
+                                    onChange={(field: string, value: number) => stockUpdate(line, value, 'purchasePrice')} value={line.purchasePrice} />
                             </div>
                     </ListItem>
                 })}
