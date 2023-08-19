@@ -40,11 +40,8 @@ export function TextFieldView(props: any) {
     };
 
     return (<>
-        <TextField label={props.label} type={props.type} variant={variant} className={props.className}
-            onChange={(value: any) => props.onChange(props.field, value.target.value)} value={props.value} error={error}
-            onBlur={onBlurAct} defaultValue={props.defaultValue} multiline={props.multiline}
-            rows={props.rows} required={props.required} onKeyDown={props.onKeyDown} placeholder={props.placeholder}
-            disabled={props.disabled} inputProps={props.inputProps} onWheel={numberInputOnWheelPreventChange}
-            onKeyUp={props.onKeyUp} />
+        <TextField {...props} variant={variant}
+            onChange={(value: any) => props.onChange(props.field, value.target.value)} error={error}
+            onBlur={onBlurAct} onWheel={numberInputOnWheelPreventChange}/>
     </>);
 }

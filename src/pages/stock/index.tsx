@@ -114,18 +114,18 @@ function Stock(props: IStockProps) {
                         }} />
                 </div>
                 {state.productSearchList.map((line, ind: number) => {
-                    return <ListItem className="border-bottom px-0" key={ind}>
-                            <div className="col p-0 lh-16">
+                    return <ListItem className="border-bottom px-0 row m-0" key={ind}>
+                            <div className="col-12 p-0 lh-16">
                                 <div className="text-secondary">{line.partNumber}</div>
                                 <div>{line.productName}</div>
                                 <div className="text-secondary fs-12">{line.productDescription}</div>
                             </div>
-                            <div className="col-3 p-0">
-                                <TextFieldView label="Stock" type={'number'} field={'stock'} className={'col-12'} required
+                            <div className="col-6 p-0">
+                                <TextFieldView placeholder="Stock" type={'number'} field={'stock'} className={'col-12'} required
                                     onChange={(field: string, value: number) => stockUpdate(line, value, 'stock')} value={line.stock} />
                             </div>
-                            <div className="col-3 p-0">
-                                <TextFieldView label="Purchase Price" type={'number'} field={'purchasePrice'} className={'col-12'} required
+                            <div className="col-6 p-0">
+                                <TextFieldView placeholder="Purchase Price" type={'number'} field={'purchasePrice'} className={'col-12'}
                                     onChange={(field: string, value: number) => stockUpdate(line, value, 'purchasePrice')} value={line.purchasePrice} />
                             </div>
                     </ListItem>

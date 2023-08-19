@@ -28,7 +28,7 @@ import moment from "moment";
 
 function Bill (props: IBillProps) {
     let [state, setState] = useState<IBill>({
-        billDate: dayjs(new Date()), totalAmt: 0
+        customerName: "", billDate: dayjs(new Date()), totalAmt: 0, totalTax: 0, totalDiscount: 0
     });
     let [productSearchList, setProductSearchList] = useState<IProduct[]>([]);
     let [productLists, setProductLists] = useState<IProduct[]>([]);
@@ -63,11 +63,8 @@ function Bill (props: IBillProps) {
         }));
     }
 
-    const productAdd = (isSingle?: boolean) => {
+    const productAdd = () => {
         let filterStocks: IProduct[] = []
-        if (isSingle) {
-            filterStocks = [AmountCalc(selectedProduct)];
-        }
         productSearchList.forEach((line: IProduct) => {
             if (+line.qty > 0) {
                 AmountCalc(line);
@@ -82,11 +79,7 @@ function Bill (props: IBillProps) {
         productLists = productLists.map((product) => {
             let ind = filterStocks.findIndex((filterStock) => filterStock.uuid === product.uuid)
             if (ind !== -1) {
-                if (filterStocks[ind].isEdit) {
-                    product.qty = +filterStocks[ind].qty;
-                } else {
-                    product.qty += +filterStocks[ind].qty;
-                }
+                product.qty = +product.qty + +filterStocks[ind].qty;
                 filterStocks.splice(ind, 1);
             }
             return product;
@@ -94,15 +87,50 @@ function Bill (props: IBillProps) {
 
         let concatData = (productLists).concat(filterStocks);
         let totalAmt = Aggregates.sum(concatData, "amount");
+        let totalTax = Aggregates.sum(concatData, "tax");
+        let totalDiscount = Aggregates.sum(concatData, "discountAmt");
         setProductLists(concatData);
         setState((prevState) => ({
             ...prevState,
-            totalAmt: totalAmt
+            totalAmt: totalAmt,
+            totalTax: totalTax,
+            totalDiscount: totalDiscount
         }));
         setSidebar("");
     }
 
-    const stockUpdate = (prodLine: IProduct, value: number) => {
+    const editSave = () => {
+        selectedProduct = AmountCalc(selectedProduct);
+        productLists[selectedProduct.index] = selectedProduct;
+        let totalAmt = Aggregates.sum(productLists, "amount");
+        let totalTax = Aggregates.sum(productLists, "tax");
+        let totalDiscount = Aggregates.sum(productLists, "discountAmt");
+        setProductLists(productLists);
+        setState((prevState) => ({
+            ...prevState,
+            totalAmt: totalAmt,
+            totalTax: totalTax,
+            totalDiscount: totalDiscount
+        }));
+        setSidebar("");
+    }
+
+    const moreSave = () => {
+        if (selectedProduct.isEdit) {
+            editSave();
+        } else {
+            productSearchList = productSearchList.map((product) => {
+                if (selectedProduct.uuid === product.uuid) {
+                    return {...selectedProduct, isEdit: false};
+                }
+                return product;
+            });
+            setProductSearchList(productSearchList);
+            setSidebar("search");
+        }
+    }
+
+    const changeQty = (prodLine: IProduct, value: number) => {
         let list = productSearchList.map((line) => {
             if (prodLine.uuid === line.uuid && prodLine.purchasePrice === line.purchasePrice) {
                 line['qty'] = +value;
@@ -114,15 +142,19 @@ function Bill (props: IBillProps) {
 
     const onButtonClick = (event: any, uuid: string, flag: string) => {
         if (flag === 'edit') {
-            let filterData = productLists.find((gridLine) => gridLine.uuid === uuid);
+            let index = productLists.findIndex((gridLine) => gridLine.uuid === uuid);
             setSidebar("edit");
-            setSelectedProduct({...filterData, isEdit: true});
+            setSelectedProduct({...productLists[index], isEdit: true, index: index});
         } else {
             let filterData = productLists.filter((gridLine) => gridLine.uuid !== uuid);
             let totalAmt = Aggregates.sum(filterData, "amount");
+            let totalTax = Aggregates.sum(filterData, "tax");
+            let totalDiscount = Aggregates.sum(filterData, "discountAmt");
             setState((prevState) => ({
                 ...prevState,
-                totalAmt: totalAmt
+                totalAmt: totalAmt,
+                totalTax: totalTax,
+                totalDiscount: totalDiscount
             }));
             setProductLists(filterData);
         }
@@ -234,10 +266,20 @@ function Bill (props: IBillProps) {
         customTableBodyFooterRender: function(opts) {
             return (
                 <TableFooter className={"footerClasses"} >
-                  <TableRow>
-                    <TableCell colSpan={5}></TableCell>
-                    <TableCell sx={{fontSize: "14px"}}>Total</TableCell>
-                    <TableCell align="right" sx={{fontSize: "16px", color: "black", fontWeight: 600}}>{state.totalAmt}</TableCell>
+                    <TableRow>
+                        <TableCell colSpan={5}></TableCell>
+                        <TableCell sx={{fontSize: "14px"}}>Tax</TableCell>
+                        <TableCell align="right" sx={{fontSize: "16px", color: "black", fontWeight: 600}}>{state.totalTax}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell colSpan={5}></TableCell>
+                        <TableCell sx={{fontSize: "14px"}}>Discount</TableCell>
+                        <TableCell align="right" sx={{fontSize: "16px", color: "black", fontWeight: 600}}>{state.totalDiscount}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell colSpan={5}></TableCell>
+                        <TableCell sx={{fontSize: "14px"}}>Total</TableCell>
+                        <TableCell align="right" sx={{fontSize: "16px", color: "black", fontWeight: 600}}>{state.totalAmt}</TableCell>
                     </TableRow>
                 </TableFooter>
             );
@@ -265,9 +307,20 @@ function Bill (props: IBillProps) {
     }
 
     const billClose = () => {
-        setState({ ...state, customerName: '', phoneNumber: '', address: '', billDate: dayjs(new Date())});
+        setState({
+            customerName: '', phoneNumber: '', address: '', billDate: dayjs(new Date()),
+            totalAmt: 0, totalTax: 0, totalDiscount: 0
+        });
         setProductLists([]);
         setIsConfirm(false);
+    }
+
+    const editBack = () => {
+        if (selectedProduct.isEdit) {
+            setSidebar("")
+        } else {
+            setSidebar("search")
+        }
     }
 
     return <div>
@@ -278,7 +331,8 @@ function Bill (props: IBillProps) {
         <div className="row m-0 py-2">
             <div className={"col-12 bg-light p-2 row m-0 " + (sidebar ? "col-sm-9" : "col-sm-12")}>
                 <div className="col-6 pb-4">
-                    <Autocomplete className="col-12" options={["Srinivasan"]} value={state.customerName} freeSolo
+                    <Autocomplete className="col-12" options={["Srinivasan"]} value={state.customerName || null} freeSolo
+                        inputValue={state.customerName}
                         onChange={(e, val) => handleChange("customerName", val)} onInputChange={(e, val) => handleChange("customerName", val)}
                         renderInput={(params) => <TextField {...params} variant="standard" label={"Customer Name"}></TextField>}
                     />
@@ -352,7 +406,7 @@ function Bill (props: IBillProps) {
                                 <div className="col-6 p-0 pt-2">
                                     <Button variant="text" size={"small"} className={""} onClick={() => {
                                         setSidebar("edit");
-                                        setSelectedProduct(line);
+                                        setSelectedProduct({...line, discountType: "Amt"});
                                     }}>More</Button>
                                 </div>
                                 <div className="col-6 p-0">
@@ -360,11 +414,14 @@ function Bill (props: IBillProps) {
                                         onChange={(field: string, value: number) => {
                                             if (+line.stock < +value) {
                                                 props.dispatch(alertAction.error('Quantity is greater than stock'));
-                                                stockUpdate(line, line.stock);
+                                                changeQty(line, line.stock);
                                             } else {
-                                                stockUpdate(line, value);
+                                                changeQty(line, value);
                                             }
-                                        }} value={line.qty} />
+                                        }} value={line.qty || 0}
+                                        onFocus={(event: any) => {
+                                            event.target.select();
+                                        }}/>
                                 </div>
                                         
                         </ListItem>
@@ -374,11 +431,11 @@ function Bill (props: IBillProps) {
             {sidebar === "edit" && <div className="col-12 col-sm-3">
                 <div className="row mx-0 mb-3 bg-light">
                     <div className="col px-0 py-2">
-                        <IconButton onClick={() => setSidebar("")}><BackIcon/></IconButton>
+                        <IconButton onClick={() => editBack()}><BackIcon/></IconButton>
                         Product Details
                     </div>
                     <div className="col-2 px-0 py-2">
-                        <IconButton onClick={() => productAdd(true)}><SaveIcon/></IconButton>
+                        <IconButton onClick={moreSave}><SaveIcon/></IconButton>
                     </div>
                 </div>
                 <div>
@@ -390,7 +447,7 @@ function Bill (props: IBillProps) {
                         </div>
                         <div className={"col-3 pr-0 d-flex"}>
                             <div className={"h3"}>{selectedProduct.stock}</div>
-                            <div className={""}>{selectedProduct.uom}</div>
+                            <span style={{paddingTop: "10px"}}>{UOMObj[selectedProduct.uom]}</span>
                         </div>
                     </div>
                     <div className="col-12 pb-4 d-flex">

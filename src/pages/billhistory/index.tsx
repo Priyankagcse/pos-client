@@ -10,6 +10,9 @@ import { IProduct } from "../product/config/config";
 import { IAPIReponse } from "src/config";
 import { IBillFilter, IBillHistoryProps, columns } from "./config/config";
 import CloseIcon from '@mui/icons-material/Close';
+import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import FilterAltOffOutlinedIcon from '@mui/icons-material/FilterAltOffOutlined';
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { TextFieldView } from "src/component/textfield-view";
@@ -17,6 +20,8 @@ import { TextFieldView } from "src/component/textfield-view";
 function BillHistory(props: IBillHistoryProps) {
     let [state, setState] = useState<{billLineLists: IProduct[], billHeaderGridData: IProduct[], productName?: string}>({billLineLists: [], billHeaderGridData: []});
     let [addProduct, setAddProduct] = useState(false);
+    let [isFilter, setIsFilter] = useState(true);
+    let [filterApplied, setFilterApplied] = useState(false);
     let [filter, setFilter] = useState<IBillFilter>({});
     
     const handleChange = (field: string, value: any) => {
@@ -33,9 +38,18 @@ function BillHistory(props: IBillHistoryProps) {
         }));
     };
 
-    const getBillHeaedr = () => {
-        props.dispatch(apiActions.methodAction('put', BILLHISTORYAPI().HEADER, filter, (res: IAPIReponse) => {
+    const getBillHeaedr = (filterObj: IBillFilter) => {
+        props.dispatch(apiActions.methodAction('put', BILLHISTORYAPI().HEADER, filterObj, (res: IAPIReponse) => {
             handleChange('billHeaderGridData', res.data);
+            let filtered = false;
+            Object.values(filter).forEach((val) => {
+                if (val) {
+                    filtered = true;
+                    return;
+                }
+            });
+            setFilterApplied(filtered);
+            setIsFilter(false);
         }));
     }
 
@@ -58,10 +72,19 @@ function BillHistory(props: IBillHistoryProps) {
 
     return <div>
         <div className="d-flex py-2">
-            <h6 className="col px-0 py-1">Bill History</h6>
+            <h6 className="col px-0 py-2 m-0">Bill History</h6>
+            {filterApplied && <IconButton onClick={() => {
+                setFilter({});
+                getBillHeaedr({});
+            }} title="Clear Filter">
+                <FilterAltOffOutlinedIcon color={"success"}/>
+            </IconButton>}
+            <IconButton onClick={() => setIsFilter(!isFilter)} title="Filter">
+                {isFilter ? <FilterAltIcon color={filterApplied ? "warning" : "inherit" }/> : <FilterAltOutlinedIcon color={filterApplied ? "warning" : "inherit" }/>}
+            </IconButton>
         </div>
-        <div className={"row m-0"}>
-            <div className="col-4 pb-4">
+        {isFilter && <div className={"row m-0 p-2 bg-light"}>
+            <div className="col-4 ">
                 <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
                     <DatePicker
                         label="From Date"
@@ -79,16 +102,16 @@ function BillHistory(props: IBillHistoryProps) {
                     />
                 </LocalizationProvider>
             </div>
-            <div className="col-4 pb-4">
+            <div className="col-4 ">
                 <TextFieldView label="Customer Name" field={'customerName'} className={'col-12 col-sm-12'}
                     onChange={changeFilter} value={filter.customerName}/>
-            </div>
-            <div className="col-4 pb-4">
                 <TextFieldView label="Bill Number" field={'billNo'} className={'col-12 col-sm-12'}
                     onChange={changeFilter} value={filter.billNo}/>
             </div>
-            <Button variant="contained" color="primary" onClick={() => getBillHeaedr()}>Filter</Button>
-        </div>
+            <div className="col-4 p-4">
+                <Button variant="contained" color="primary" onClick={() => getBillHeaedr(filter)}>Filter</Button>
+            </div>
+        </div>}
         <div className="row m-0">
             <div className={"col-12 px-0 py-2 " + (addProduct ? "col-sm-9" : "col-sm-12")}>
                 <MUIDataTable

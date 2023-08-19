@@ -1,3 +1,4 @@
+import moment from "moment";
 import { MUIDataTableColumn } from "mui-datatables";
 import { IUser } from "src/pages/login/login-reducer";
 
@@ -22,6 +23,9 @@ export const columns: MUIDataTableColumn[] = [
     {
         name: 'billDate',
         label: 'Date',
+        options: {         
+            customBodyRender: (value: string) => moment(value).format("DD/MMM/YYYY hh:mm A")
+        }
     },
     {
         name: 'amount',
