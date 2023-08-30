@@ -108,7 +108,7 @@ function Stock(props: IStockProps) {
                 <div className="col-12 p-0">
                     <TextFieldView label="Search" type={'text'} field={'productName'} className={'col-12'} required
                         onChange={handleChange} value={state.productName} onKeyDown={(event: KeyboardEvent) => {
-                            if (event.code === "Enter") {
+                            if (event.keyCode === 13) {
                                 productSearch();
                             }
                         }} />

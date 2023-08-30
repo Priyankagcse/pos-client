@@ -25,6 +25,8 @@ import BackIcon from '@mui/icons-material/ArrowBackIosNew';
 import { IProduct, UOMObj } from "../product/config/config";
 import { IAPIReponse } from "src/config";
 import moment from "moment";
+import { LocalPrintshopOutlined } from "@mui/icons-material";
+import { BillPrint } from "./print";
 
 function Bill (props: IBillProps) {
     let [state, setState] = useState<IBill>({
@@ -326,6 +328,7 @@ function Bill (props: IBillProps) {
     return <div>
         <div className="d-flex py-2">
             <h6 className="py-2 col">New Bill</h6>
+            <Button className="mx-2" variant="contained" color="success" onClick={() => BillPrint()} startIcon={<LocalPrintshopOutlined/>}>Print</Button>
             <Button variant="contained" color="success" onClick={() => billSave()} startIcon={<SaveIcon/>}>Save</Button>
         </div>
         <div className="row m-0 py-2">
@@ -386,7 +389,7 @@ function Bill (props: IBillProps) {
                 <div className="">
                     <TextFieldView label="Search" type={'text'} field={'productName'} className={'col-12'} required
                         onChange={handleChange} value={state.productName} onKeyDown={(event: KeyboardEvent) => {
-                            if (event.code === "Enter") {
+                            if (event.keyCode === 13) {
                                 productSearch();
                             }
                         }} />
