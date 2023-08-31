@@ -12,11 +12,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import MUIDataTable, { MUIDataTableColumn, MUIDataTableMeta, MUIDataTableOptions } from "mui-datatables";
 import AddIcon from '@mui/icons-material/Add';
 import { isNullOrUndefinedOrEmpty } from "src/common";
-import { IProduct, IProductProps, TaxData, UOMObj, uomList } from "./config/config";
+import { IProduct, IProductProps, ProductType, TaxData, UOMObj, uomList } from "./config/config";
 import { IAPIReponse } from "src/config";
 
 function Product(props: IProductProps) {
-    let [state, setState] = useState<IProduct>({uom: 'count', gst: '0'});
+    let [state, setState] = useState<IProduct>({uom: 'count', gst: '0', productType: 0});
     let [commonState, setCommonState] = useState({openConfirm: false, gridRows: [], editRowData: {}, actionType: '',
         openForm: false, perPageCount: 3, gridCount: 0, gridPagination: -1, allGridRows: [], maxRowLimit: 5, currentPage: 0,
         caller: '', searchText: '', sortColumn: '', sortDirection: ''} as any);
@@ -242,7 +242,7 @@ function Product(props: IProductProps) {
                 <h6 className="col px-0 py-1">Product List</h6>
                 <Button variant="contained" color="primary" onClick={() => {
                     setCommonState({ ...commonState, openForm: true });
-                    setState({ partNumber: '', productName: '', uom: 'count', gst: '0', salePrice: 0, productDescription: '' });
+                    setState({ partNumber: '', productName: '', uom: 'count', gst: '0', productType: 0, salePrice: 0, productDescription: '' });
                 }}><AddIcon/>Add New</Button>
             </div>
             <MUIDataTable
@@ -258,19 +258,24 @@ function Product(props: IProductProps) {
             </div>
             <form action="" autoComplete="off" className="">
                 <div className="row">
-                    <div className="col-12 col-sm-6 pb-4">
+                    <div className="col-12 col-sm-3 pb-4">
+                        <DropDownView label="Type" type={'text'} field={'productType'} className={'col-12 '} required
+                            onChange={handleChange} value={state.productType} dataSource={ProductType}
+                            fields={{text: 'text', value: 'value'}} variant="standard"></DropDownView>
+                    </div>
+                    <div className="col-12 col-sm-3 pb-4">
                         <TextFieldView label="Part Number" type={'text'} field={'partNumber'} className={'col-12 '} required
                             onChange={handleChange} value={state.partNumber} />
                     </div>
                     <div className="col-12 col-sm-6 pb-4">
-                        <TextFieldView label="Product Name" type={'text'} field={'productName'} className={'col-12 '} required
+                        <TextFieldView label="Product Name/Service Name" type={'text'} field={'productName'} className={'col-12 '} required
                             onChange={handleChange} value={state.productName} />
                     </div>
                     <div className="col-12 pb-4">
                         <TextFieldView label="Product Description" type={'text'} field={'productDescription'} className={'col-12 col-sm-12'}
                             onChange={handleChange} value={state.productDescription} multiline={true} />
                     </div>
-                    <div className="col-12 col-sm-6 pb-4">
+                    {!state.productType && <><div className="col-12 col-sm-6 pb-4">
                         <DropDownView label="UOM" type={'text'} field={'uom'} className={'col-12 '} required
                             onChange={handleChange} value={state.uom} dataSource={uomList}
                             fields={{text: 'text', value: 'value'}} variant="standard"></DropDownView>
@@ -279,7 +284,7 @@ function Product(props: IProductProps) {
                         <DropDownView label="GST" type={'text'} field={'gst'} className={'col-12 '} required
                             onChange={handleChange} value={state.gst} dataSource={TaxData}
                             fields={{text: 'text', value: 'value'}} variant="standard"></DropDownView>
-                    </div>
+                    </div></>}
                     <div className="col-12 col-sm-6 pb-4">
                         <TextFieldView label="Sale Price" type={'number'} field={'salePrice'} className={'col-12 '} required
                             onChange={handleChange} value={state.salePrice} />

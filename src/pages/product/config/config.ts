@@ -14,9 +14,12 @@ export let uomList = [
 
 export let UOMObj = {count: 'Count'};
 
+export let ProductType = [{text: "Product", value: 0}, {text: "Service", value: 1}];
+
 export interface IProduct {
     index?: number;
     uuid?: string;
+    productType?: number;
     partNumber?: string;
     productName?: string;
     productDescription?: string;
