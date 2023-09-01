@@ -22,7 +22,8 @@ export const PRODUCTAPI = (firstParam?: any, secondParam?: any) => {
         DELETE: API_URL + 'product',
         PRODUCTSEARCH: API_URL + `productSearch/${firstParam}/${secondParam}`,
         GETPRODUCT: API_URL + 'getProduct',
-        PRODUCTSEARCHWITHSTOCK: API_URL + `productSearchWithStock/${firstParam}/${secondParam}`
+        PRODUCTSEARCHWITHSTOCK: API_URL + `productSearchWithStock/${firstParam}/${secondParam}`,
+        GETALLPRODUCTS: API_URL + `getAllProducts/${firstParam}`
     };
 };
 
