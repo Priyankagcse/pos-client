@@ -328,7 +328,7 @@ function Bill (props: IBillProps) {
     return <div>
         <div className="d-flex py-2">
             <h6 className="py-2 col">New Bill</h6>
-            <Button className="mx-2" variant="contained" color="success" onClick={() => BillPrint()} startIcon={<LocalPrintshopOutlined/>}>Print</Button>
+            <Button className="mx-2" variant="contained" color="success" onClick={() => BillPrint(productLists)} startIcon={<LocalPrintshopOutlined/>}>Print</Button>
             <Button variant="contained" color="success" onClick={() => billSave()} startIcon={<SaveIcon/>}>Save</Button>
         </div>
         <div className="row m-0 py-2">
