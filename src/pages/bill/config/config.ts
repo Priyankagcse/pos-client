@@ -16,6 +16,10 @@ export interface IBill {
 	totalAmt: number;
 	totalTax: number;
 	totalDiscount: number;
+	vehicleNumber?: string;
+	chasisNumber?: string;
+	coveredKm?: number;
+	additionalCharge?: number;
 }
 
 export interface IBillProps {

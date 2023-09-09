@@ -1,12 +1,12 @@
-import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, IconButton, ListItem, TableCell, TableFooter, TableRow, TextField } from "@mui/material";
-import React, {useState } from "react";
+import { Autocomplete, Button, Dialog, DialogActions, DialogTitle, IconButton, InputAdornment, List, ListItem, ListItemButton, ListItemText, TableCell, TableFooter, TableRow, TextField } from "@mui/material";
+import React, {useEffect, useState } from "react";
 import { TextFieldView } from "src/component/textfield-view";
 import 'dayjs/locale/de';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import MUIDataTable, { MUIDataTableColumn, MUIDataTableMeta, MUIDataTableOptions } from "mui-datatables";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import SaveIcon from '@mui/icons-material/Save';
-import CloseIcon from '@mui/icons-material/Close';
+// import CloseIcon from '@mui/icons-material/Close';
 import { apiActions } from "src/action/action";
 import { BILLAPI, PRODUCTAPI } from "src/apiurl";
 import { addCreatedBy } from "src/common";
@@ -14,7 +14,7 @@ import { alertAction } from "../alert/alert-reducer";
 import { connect } from "react-redux";
 import { IState } from "src/initialload/state-interface";
 import { Dispatch } from "redux";
-import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
 import dayjs from 'dayjs';
 import { DropDownView } from "src/component/dropdown-view";
 import { Aggregates } from "src/helper/Aggregates";
@@ -30,14 +30,33 @@ import { BillPrint } from "./print";
 
 function Bill (props: IBillProps) {
     let [state, setState] = useState<IBill>({
-        customerName: "", billDate: dayjs(new Date()), totalAmt: 0, totalTax: 0, totalDiscount: 0
+        productName: "", customerName: "", billDate: dayjs(new Date()), totalAmt: 0, totalTax: 0, totalDiscount: 0
     });
+    let [allProducts, setAllProducts] = useState<IProduct[]>([]);
     let [productSearchList, setProductSearchList] = useState<IProduct[]>([]);
     let [productLists, setProductLists] = useState<IProduct[]>([]);
-    let [sidebar, setSidebar] = useState("");
+    let [sidebar, setSidebar] = useState("search");
     let [isConfirm, setIsConfirm] = useState(false);
     let [selectedProduct, setSelectedProduct] = useState<IProduct>({});
+
+    useEffect(() => {
+        productSearch();
+    }, [])
     
+    const handleSearch = (field: string, value: string) => {
+        let filterList = allProducts.filter((prod) => {
+            if (prod.partNumber.toLowerCase().includes(value.toLowerCase()) || prod.productDescription.toLowerCase().includes(value.toLowerCase()) || prod.productName.toLowerCase().includes(value.toLowerCase())) {
+                return true;
+            }
+            return false;
+        })
+        setState((prevState) => ({
+            ...prevState,
+            [field]: value
+        }));
+        setProductSearchList(filterList);
+    };
+
     const handleChange = (field: string, value: string | Date) => {
         setState((prevState) => ({
             ...prevState,
@@ -60,8 +79,8 @@ function Bill (props: IBillProps) {
     };
 
     const productSearch = () => {
-        props.dispatch(apiActions.methodAction('get', PRODUCTAPI(props.loginCurrentUser.companyUuid, state.productName).PRODUCTSEARCHWITHSTOCK, {}, (res: IAPIReponse) => {
-            setProductSearchList(res.data);
+        props.dispatch(apiActions.methodAction('get', PRODUCTAPI(props.loginCurrentUser.companyUuid).GETALLPRODUCTS, {}, (res: IAPIReponse) => {
+            setAllProducts(res.data);
         }));
     }
 
@@ -96,14 +115,31 @@ function Bill (props: IBillProps) {
             ...prevState,
             totalAmt: totalAmt,
             totalTax: totalTax,
-            totalDiscount: totalDiscount
+            totalDiscount: totalDiscount,
+            productName: ""
         }));
-        setSidebar("");
+        setProductSearchList([]);
+        // setSidebar("");
     }
 
-    const editSave = () => {
-        selectedProduct = AmountCalc(selectedProduct);
-        productLists[selectedProduct.index] = selectedProduct;
+    const moreSave = () => {
+        if (selectedProduct.isEdit) {
+            selectedProduct = AmountCalc(selectedProduct);
+            productLists[selectedProduct.index] = selectedProduct;
+        } else {
+            let isAdded = false;
+            productLists = productLists.map((product) => {
+                if (selectedProduct.uuid === product.uuid) {
+                    isAdded = true;
+                    selectedProduct.qty = +selectedProduct.qty + +product.qty;
+                    return {...selectedProduct, isEdit: false};
+                }
+                return product;
+            });
+            if (!isAdded) {
+                productLists.push(selectedProduct);
+            }
+        }
         let totalAmt = Aggregates.sum(productLists, "amount");
         let totalTax = Aggregates.sum(productLists, "tax");
         let totalDiscount = Aggregates.sum(productLists, "discountAmt");
@@ -112,34 +148,11 @@ function Bill (props: IBillProps) {
             ...prevState,
             totalAmt: totalAmt,
             totalTax: totalTax,
-            totalDiscount: totalDiscount
+            totalDiscount: totalDiscount,
+            productName: ""
         }));
-        setSidebar("");
-    }
-
-    const moreSave = () => {
-        if (selectedProduct.isEdit) {
-            editSave();
-        } else {
-            productSearchList = productSearchList.map((product) => {
-                if (selectedProduct.uuid === product.uuid) {
-                    return {...selectedProduct, isEdit: false};
-                }
-                return product;
-            });
-            setProductSearchList(productSearchList);
-            setSidebar("search");
-        }
-    }
-
-    const changeQty = (prodLine: IProduct, value: number) => {
-        let list = productSearchList.map((line) => {
-            if (prodLine.uuid === line.uuid && prodLine.purchasePrice === line.purchasePrice) {
-                line['qty'] = +value;
-            }
-            return line;
-        });
-        setProductSearchList(list);
+        setProductSearchList([])
+        setSidebar("search");
     }
 
     const onButtonClick = (event: any, uuid: string, flag: string) => {
@@ -280,6 +293,15 @@ function Bill (props: IBillProps) {
                     </TableRow>
                     <TableRow>
                         <TableCell colSpan={5}></TableCell>
+                        <TableCell sx={{fontSize: "14px"}}>Additional Charge</TableCell>
+                        <TableCell align="right">
+                            <TextFieldView type={'number'} field={'additionalCharge'} size={"small"} 
+                                onChange={handleChange} value={state.additionalCharge} sx={{width: "80px"}}
+                                inputProps={{min: 0, style: { textAlign: 'right' }}}/>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell colSpan={5}></TableCell>
                         <TableCell sx={{fontSize: "14px"}}>Total</TableCell>
                         <TableCell align="right" sx={{fontSize: "16px", color: "black", fontWeight: 600}}>{state.totalAmt}</TableCell>
                     </TableRow>
@@ -319,7 +341,9 @@ function Bill (props: IBillProps) {
 
     const editBack = () => {
         if (selectedProduct.isEdit) {
-            setSidebar("")
+            setSidebar("search")
+            setState({...state, productName: ''})
+            setProductSearchList([])
         } else {
             setSidebar("search")
         }
@@ -340,96 +364,88 @@ function Bill (props: IBillProps) {
                         renderInput={(params) => <TextField {...params} variant="standard" label={"Customer Name"}></TextField>}
                     />
                 </div>
-                <div className="col-6 pb-4">
+                <div className="col-12 col-sm-3 pb-4">
                     <TextFieldView label="Phone Number" type={'number'} field={'phoneNumber'} className={'col-12 col-sm-12'}
                         onChange={handleChange} value={state.phoneNumber} inputProps={{maxLength: 10}} placeholder={'9874563210'} />
                 </div>
-                <div className="col-12 pb-4">
-                    <TextFieldView label={"Address"} className={"col-12"} value={state.address} onChange={handleChange}
-                        multiline field={'address'}
-                    />
-                </div>
-                <div className="col-6 pb-4">
+                <div className="col-12 col-sm-3 pb-4">
                     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
                         <DatePicker
                             label="Date"
                             value={state.billDate}
                             onChange={(newValue: Date) => handleChange("billDate", newValue)}
                             slotProps={{ textField: { variant: 'standard', } }}
-
+                            className="col-12"
                         />
                     </LocalizationProvider>
                 </div>
+                <div className="col-12 pb-4">
+                    <TextFieldView label={"Address"} className={"col-12"} value={state.address} onChange={handleChange}
+                        multiline field={'address'}
+                    />
+                </div>
+                
+                <div className="col-12 col-sm-4 pb-4">
+                    <TextFieldView label="Vehicle Number" type={'text'} field={'vehicleNumber'} className={'col-12 col-sm-12'}
+                        onChange={handleChange} value={state.vehicleNumber} />
+                </div>
+                <div className="col-12 col-sm-4 pb-4">
+                    <TextFieldView label="Vehicle Chasis Number" type={'text'} field={'chasisNumber'} className={'col-12 col-sm-12'}
+                        onChange={handleChange} value={state.chasisNumber} />
+                </div>
+                <div className="col-12 col-sm-4 pb-4">
+                    <TextFieldView label="Covered KM" type={'number'} field={'coveredkm'} className={'col-12 col-sm-12'}
+                        onChange={handleChange} value={state.coveredKm} placeholder={"km"}/>
+                </div>
                 <div className="col-12">
-                    <div className="d-flex py-2">
-                        <h6 className="col px-0 py-1"></h6>
-                        {!sidebar && <Button variant="contained" color="primary" startIcon={<AddIcon/>} onClick={() => {
-                            setSidebar("search");
-                            setState({...state, productName: ''})
-                            setProductSearchList([])
-                        }}>Add Product</Button>}
-                    </div>
                     <MUIDataTable
                         title={""}
                         data={productLists}
                         columns={Columns}
                         options={options}
                     />
-                    
                 </div>
             </div>
-            {sidebar === "search" && <div className="col-12 col-sm-3">
-                <div className="row mx-0 mb-3 bg-light">
-                    <div className="col py-2">Search Product</div>
-                    <div className="col-4 px-0">
+            {sidebar === "search" && <div className="col-12 col-sm-3 pe-0">
+                <div className="d-flex mx-0 mb-3 bg-light">
+                    <div className="col p-2">Search Product</div>
+                    <div className="px-0">
                         <IconButton onClick={() => productAdd()}><SaveIcon/></IconButton>
-                        <IconButton onClick={() => setSidebar("")}><CloseIcon/></IconButton>
+                        {/* <IconButton onClick={() => setSidebar("")}><CloseIcon/></IconButton> */}
                     </div>
                 </div>
-                <div className="">
+                <div className="px-2">
                     <TextFieldView label="Search" type={'text'} field={'productName'} className={'col-12'} required
-                        onChange={handleChange} value={state.productName} onKeyDown={(event: KeyboardEvent) => {
+                        onChange={handleSearch} value={state.productName} onKeyDown={(event: KeyboardEvent) => {
                             if (event.keyCode === 13) {
                                 productSearch();
                             }
-                        }} />
+                        }} InputProps={{endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    onClick={productSearch}
+                                    edge="end"
+                                >
+                                    <SearchIcon />
+                                </IconButton>
+                            </InputAdornment>
+                        )}}/>
                 </div>
-                <div className="">
+                <List dense>
                     {productSearchList.map((line, ind: number) => {
-                        return <ListItem className="border-bottom px-0 row m-0" key={ind}>
-                                <div className="col-9 p-0 lh-16">
-                                    <div className="text-secondary">{line.partNumber}</div>
-                                    <div>{line.productName}</div>
-                                    <div className="text-secondary fs-12">{line.productDescription}</div>
-                                </div>
-                                <div className={"col-3 pr-0 d-flex"}>
-                                    <span className={"h3 m-0"}>{line.stock}</span>
-                                    <span style={{paddingTop: "10px"}}>{UOMObj[line.uom]}</span>
-                                </div>
-                                <div className="col-6 p-0 pt-2">
-                                    <Button variant="text" size={"small"} className={""} onClick={() => {
-                                        setSidebar("edit");
-                                        setSelectedProduct({...line, discountType: "Amt"});
-                                    }}>More</Button>
-                                </div>
-                                <div className="col-6 p-0">
-                                    <TextFieldView placeholder="Qty" type={'number'} field={'qty'} className={'col-12'} required
-                                        onChange={(field: string, value: number) => {
-                                            if (+line.stock < +value) {
-                                                props.dispatch(alertAction.error('Quantity is greater than stock'));
-                                                changeQty(line, line.stock);
-                                            } else {
-                                                changeQty(line, value);
-                                            }
-                                        }} value={line.qty || 0}
-                                        onFocus={(event: any) => {
-                                            event.target.select();
-                                        }}/>
-                                </div>
-                                        
+                        return <ListItem className="border-bottom" disablePadding key={ind} onClick={() => {
+                            setSidebar("edit");
+                            setSelectedProduct({...line, discountType: "Amt"});
+                        }}>
+                            <ListItemButton className="px-2 lh-16">
+                                <ListItemText
+                                    primary={<div><strong>{line.partNumber}</strong> - {line.productName}</div>}
+                                    secondary={line.productDescription}
+                                />
+                            </ListItemButton>
                         </ListItem>
                     })}
-                </div>
+                </List>
             </div>}
             {sidebar === "edit" && <div className="col-12 col-sm-3">
                 <div className="row mx-0 mb-3 bg-light">
