@@ -9,7 +9,8 @@ export const columns: MUIDataTableColumn[] = [
         options: {
             display: false,
             viewColumns: false,
-            searchable: false
+            searchable: false,
+            filter: false
         }
     },
     {
@@ -19,6 +20,18 @@ export const columns: MUIDataTableColumn[] = [
     {
         name: 'customerName',
         label: 'Customer Name',
+    },
+    {
+        name: 'vehicleNumber',
+        label: 'Vehicle Number',
+    },
+    {
+        name: 'chasisNumber',
+        label: 'Chasis Number',
+    },
+    {
+        name: 'coveredkm',
+        label: 'Covered KM',
     },
     {
         name: 'billDate',
@@ -42,6 +55,8 @@ export interface IBillHistoryProps {
 export interface IBillFilter {
     customerName?: string;
     billNo?: string;
+    vehicleNumber?: string;
+    chasisNumber?: string;
     fromDate?: Date;
     toDate?: Date;
 }

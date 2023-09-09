@@ -84,7 +84,7 @@ function BillHistory(props: IBillHistoryProps) {
             </IconButton>
         </div>
         {isFilter && <div className={"row m-0 p-2 bg-light"}>
-            <div className="col-4 ">
+            <div className="col-2 ">
                 <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
                     <DatePicker
                         label="From Date"
@@ -108,7 +108,13 @@ function BillHistory(props: IBillHistoryProps) {
                 <TextFieldView label="Bill Number" field={'billNo'} className={'col-12 col-sm-12'}
                     onChange={changeFilter} value={filter.billNo}/>
             </div>
-            <div className="col-4 p-4">
+            <div className="col-4 ">
+                <TextFieldView label="Vehicle Number" field={'vehicleNumber'} className={'col-12 col-sm-12'}
+                    onChange={changeFilter} value={filter.vehicleNumber}/>
+                <TextFieldView label="Chasis Number" field={'chasisNumber'} className={'col-12 col-sm-12'}
+                    onChange={changeFilter} value={filter.chasisNumber}/>
+            </div>
+            <div className="col-2 p-4">
                 <Button variant="contained" color="primary" onClick={() => getBillHeaedr(filter)}>Filter</Button>
             </div>
         </div>}
